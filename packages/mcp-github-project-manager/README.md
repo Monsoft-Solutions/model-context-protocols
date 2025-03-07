@@ -26,17 +26,69 @@ A Model Context Protocol (MCP) implementation for managing GitHub issues and pro
 npm install @monsoft/mcp-github-project-manager
 ```
 
+## Build Process
+
+When you build the project with `npm run build`, the following happens:
+
+1. The TypeScript code is compiled to JavaScript in the `dist` folder
+2. The `.env` file (if it exists) is automatically copied to the `dist` folder
+3. If no `.env` file exists, the `.env.example` file is copied to the `dist` folder as a template
+
+This ensures that your environment configuration is always available when running the compiled code, making deployment easier.
+
+```bash
+# Build the project
+npm run build
+```
+
 ## Usage
 
 ### Environment Setup
 
 Before using the GitHub Project Manager, you need to set up a GitHub token:
 
+#### Using npm Scripts (Recommended)
+
+The easiest way to set up your environment is to use the provided npm scripts:
+
 ```bash
-npm run setup
+# Generate a new .env file with your GitHub token
+npm run generate-env
 ```
 
-This will prompt you to enter your GitHub token and save it to a `.env` file.
+This interactive script will prompt you for your GitHub Personal Access Token and create a properly formatted `.env` file. When you build the project with `npm run build`, this file will be automatically copied to the `dist` folder.
+
+#### Using Environment File Manually
+
+You can also manually create an environment file. Create a `.env` file in the root directory of your project based on the provided `.env.example`:
+
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Edit the .env file with your GitHub token
+nano .env
+```
+
+Your `.env` file should contain at least:
+
+```
+GITHUB_PERSONAL_TOKEN=your_github_personal_access_token_here
+```
+
+When you build the project with `npm run build`, the `.env` file will be automatically copied to the `dist` folder, making it available when running the compiled code.
+
+#### Using Environment Variables
+
+You can also set the GitHub token as an environment variable:
+
+```bash
+# Set the environment variable directly (temporary)
+export GITHUB_PERSONAL_TOKEN=your_github_personal_access_token_here
+
+# Or use the legacy setup script
+npm run setup
+```
 
 ### Running the Server
 
@@ -50,7 +102,7 @@ The easiest way to run the server is to use the provided shell script:
 ./github-project-manager.sh
 ```
 
-This script will automatically load the GitHub token from the `.env` file and start the server.
+This script will automatically look for the `.env` file in both the `dist` folder and the project root, and load the environment variables before starting the server.
 
 #### Using Node.js
 
@@ -58,19 +110,21 @@ You can also run the server directly using Node.js:
 
 ```bash
 # Using the environment variable
-GITHUB_TOKEN=your_github_token node dist/server/index.js
+GITHUB_PERSONAL_TOKEN=your_github_token node dist/server/index.js
 
-# Or using the .env file
-node scripts/run-example.js
+# Or using the built-in environment loader (recommended)
+node dist/server/index.js
 ```
+
+The server will automatically look for the `.env` file in the appropriate locations.
 
 #### Using the API
 
 ```javascript
-import { startGitHubProjectManagerServer } from '@monsoft/mcp-github-project-manager';
+import { startGitHubProjectManagerServer } from "@monsoft/mcp-github-project-manager";
 
 // Start the server with a token
-startGitHubProjectManagerServer('your_github_token');
+startGitHubProjectManagerServer("your_github_token");
 ```
 
 ## Available Tools
@@ -199,6 +253,20 @@ The GitHub Project Manager provides detailed error information for various scena
 - Validation errors
 - Rate limit errors
 - Network errors
+
+## Troubleshooting
+
+### Environment Configuration Issues
+
+If you encounter issues with the environment configuration:
+
+1. **Missing GitHub Token**: If you see an error about a missing GitHub token, make sure you've created a `.env` file with your `GITHUB_PERSONAL_TOKEN` using one of the methods described above.
+
+2. **Environment File Not Found**: If the server can't find your `.env` file, try running `npm run generate-env` to create one, or manually copy `.env.example` to `.env` and add your token.
+
+3. **Token Permissions**: Ensure your GitHub token has the necessary permissions for the operations you're trying to perform (repo, project, etc.).
+
+4. **Build Issues**: If you've modified the environment configuration, make sure to rebuild the project with `npm run build` to copy the updated `.env` file to the `dist` folder.
 
 ## License
 
