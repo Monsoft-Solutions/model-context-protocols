@@ -3,6 +3,7 @@
 A collection of Model Context Protocols (MCPs) developed by Monsoft Solutions, LLC for enhancing AI assistant capabilities.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Monsoft-Solutions/model-context-protocols?labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit%20Reviews)
 
 ## Overview
 
