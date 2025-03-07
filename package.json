@@ -1,5 +1,5 @@
 {
-  "name": "monsoft-mcps",
+  "name": "@monsoft/model-context-protocols",
   "private": true,
   "scripts": {
     "build": "turbo run build",
