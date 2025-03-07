@@ -1,5 +1,7 @@
 {
   "name": "monsoft-mcps",
+  "author": "Monsoft Solutions, LLC (https://monsoftsolutions.com)",
+  "description": "Contains all Monsoft MCPs",
   "private": true,
   "scripts": {
     "build": "turbo run build",
