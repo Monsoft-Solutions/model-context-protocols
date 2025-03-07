@@ -1,0 +1,52 @@
+---
+description: Guidelines for generating and structuring MkDocs documentation files.
+globs: *.md, *.ts, *.tsx
+---
+# MkDocs Documentation Generation Rules
+
+## General Structure
+- All documentation should be written in Markdown format
+- Use proper heading hierarchy (H1 -> H2 -> H3)
+- Main page should be named `index.md`
+- File names should be lowercase with hyphens for spaces (e.g., `getting-started.md`)
+- Include a table of contents where appropriate using the `[TOC]` marker
+
+## Content Guidelines
+- Start each page with a clear H1 title
+- Include a brief introduction after the title
+- Use code blocks with appropriate language syntax highlighting
+- Document code examples thoroughly with comments
+- Use admonitions for notes, warnings, and tips (e.g., `!!! note`, `!!! warning`)
+- Include screenshots or diagrams where they add value
+- Link to related documentation pages using relative links
+- Keep language clear, concise, and accessible
+
+## Navigation Structure
+- Organize documentation in logical sections
+- Create a clear hierarchy from general to specific topics
+- Include a navigation sidebar with meaningful section names
+- Ensure all pages are accessible from the navigation
+
+## Configuration
+- Initially create `mkdocs.yml` if doesn't exist
+- Update `mkdocs.yml` when adding new pages
+- Configure appropriate plugins and extensions
+- Use consistent theme settings throughout documentation
+- Set proper metadata for SEO optimization
+
+## API Documentation
+- Document each function/method with:
+  - Purpose
+  - Parameters (with types)
+  - Return values
+  - Examples
+  - Exceptions/errors
+- Group related API functions together
+- Include version information where appropriate
+
+## Best Practices
+- Keep documentation in sync with code changes
+- Review documentation for accuracy regularly
+- Test all code examples to ensure they work
+- Optimize for readability on both desktop and mobile
+- Consider internationalization needs if applicable

@@ -1,5 +1,7 @@
 {
   "name": "@monsoft/model-context-protocols",
+  "author": "Monsoft Solutions, LLC (https://monsoftsolutions.com)",
+  "description": "Contains Model Context Protocols developed by Monsoft Solutions",
   "private": true,
   "scripts": {
     "build": "turbo run build",
