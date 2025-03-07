@@ -1,6 +1,6 @@
 {
   "name": "@monsoft/mcp-eraser-diagram",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A Model Context Protocol implementation for generating Entity Relationship Diagrams using Eraser API",
   "type": "module",
   "main": "dist/index.js",
@@ -39,4 +39,4 @@
     "axios": "^1.6.7",
     "zod": "^3.22.4"
   }
-} 
+}

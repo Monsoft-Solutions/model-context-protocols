@@ -1,6 +1,6 @@
 {
   "name": "@monsoft/mcp-code-architect",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A Model Context Protocol code architect implementation",
   "type": "module",
   "main": "dist/index.js",
@@ -33,4 +33,4 @@
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@anthropic-ai/sdk": "^0.39.0"
   }
-} 
+}
