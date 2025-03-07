@@ -1,0 +1,86 @@
+---
+description: Contains the rules for the Typescript code
+globs: *.ts, *.tsx, *.md
+---
+// TypeScript Code Style and Best Practices
+
+// Type Definitions
+* Prefer `type` over `interface` for most type definitions
+* Use interfaces only when you need to take advantage of declaration merging
+* Use descriptive names for types that explain their purpose
+* Use PascalCase for type names and interfaces
+* Use readonly for properties that shouldn't be modified after initialization
+* Prefer union types over enums when possible
+* Use type aliases to simplify complex types
+* Implement only 1 type definition per file. NEVER define multiple types inside 1 file
+* The type files should be grouped inside the /types folder
+
+// Functions
+* Use arrow functions for callbacks and anonymous functions
+* Explicitly type function parameters and return types
+* Use function overloads for complex function signatures
+* Prefer async/await over raw Promises when possible
+* Use optional parameters instead of multiple function signatures when appropriate
+* The parameters of the functions should be an object (e.g: data: {name: string, amount: number})
+* Always add a concise and clear documentation using JSDoc
+
+// Variables and Constants
+* Use `const` by default, `let` only when necessary, never use `var`
+* Use camelCase for variable and function names
+* Prefix private class members with underscore (_)
+* Use PascalCase for class names and enum values
+
+
+// Imports and Exports
+* Use named exports always
+* Group imports by source (external libraries first, then internal modules)
+* Use absolute imports for external packages and alias imports for internal modules
+
+// Error Handling
+* Use typed error classes instead of generic Error
+* Always handle Promise rejections
+* Prefer try/catch blocks for synchronous code that may throw
+
+// Generics
+* Use generics to create reusable components
+* Use descriptive names for generic type parameters (T for type, K for key, etc.)
+* Constrain generic types when possible using extends
+
+// Classes
+* Minimize class inheritance, prefer composition
+* Define member visibility (public, private, protected)
+* Initialize class properties in the constructor when possible
+* Use getters and setters for computed properties
+* Always add a concise and clear documentation using JSDoc
+* Implement only 1 class definition per file. NEVER define multitple classes inside 1 file
+
+// Nullability
+* Use undefined instead of null when possible
+* Use optional chaining (?.) and nullish coalescing (??) operators
+* Avoid non-null assertion operator (!) when possible
+
+// Code Organization
+* One class/type/enum per file
+* Group related functionality in namespaces or modules
+* Keep files under 300 lines when possible
+
+// Comments and Documentation
+* Use JSDoc comments for public APIs
+* Document complex algorithms with inline comments
+* Use TODO comments for incomplete implementations
+
+// Testing
+* Write unit tests for all public functions
+* Use descriptive test names that explain the expected behavior
+* Mock external dependencies in tests
+
+// Async Code
+* Use async/await instead of raw promises
+* Handle errors in async functions with try/catch
+* Avoid callback patterns in favor of promises
+
+// Strict Mode
+* Enable strict mode in tsconfig.json
+* Avoid using any type when possible
+* Use unknown instead of any when type is truly unknown
+* Enable noImplicitAny and strictNullChecks
