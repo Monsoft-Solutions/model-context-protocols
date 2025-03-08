@@ -15,6 +15,13 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "version-packages": {
+      "cache": false
+    },
+    "release": {
+      "dependsOn": ["build"],
+      "cache": false
     }
   }
 }
