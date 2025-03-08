@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Suggest an enhancement or new feature for this project
-labels: "enhancement, needs triage"
+labels: 'enhancement, needs triage'
 ---
 
 ## 📝 Problem Statement

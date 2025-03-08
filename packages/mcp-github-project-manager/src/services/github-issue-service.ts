@@ -31,8 +31,7 @@ export class GitHubIssueService {
      */
     async createIssue(params: CreateIssueParams) {
         try {
-            const { owner, repo, title, body, labels, assignees, milestone } =
-                params;
+            const { owner, repo, title, body, labels, assignees, milestone } = params;
 
             const response = await this.octokit.issues.create({
                 owner,
@@ -57,17 +56,7 @@ export class GitHubIssueService {
      */
     async updateIssue(params: UpdateIssueParams) {
         try {
-            const {
-                owner,
-                repo,
-                issue_number,
-                title,
-                body,
-                state,
-                labels,
-                assignees,
-                milestone,
-            } = params;
+            const { owner, repo, issue_number, title, body, state, labels, assignees, milestone } = params;
 
             const response = await this.octokit.issues.update({
                 owner,

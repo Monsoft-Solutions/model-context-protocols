@@ -55,20 +55,20 @@ Unsure where to begin contributing? You can start by looking through these `begi
 
 1. Fork the repository
 2. Clone your fork:
-   ```bash
-   git clone https://github.com/your-username/model-context-protocols.git
-   cd model-context-protocols
-   ```
+    ```bash
+    git clone https://github.com/your-username/model-context-protocols.git
+    cd model-context-protocols
+    ```
 3. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 4. Create a new branch:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
 
 ### Coding Standards
 
@@ -81,21 +81,21 @@ Unsure where to begin contributing? You can start by looking through these `begi
 ### Testing
 
 - Run existing tests before submitting a PR:
-  ```bash
-  npm test
-  # or
-  yarn test
-  ```
+    ```bash
+    npm test
+    # or
+    yarn test
+    ```
 - Add new tests for new functionality
 
 ### Documentation
 
 - Update documentation for any changed functionality
 - Document new MCPs thoroughly, including:
-  - Purpose and use cases
-  - Configuration options
-  - Example usage
-  - Any limitations or known issues
+    - Purpose and use cases
+    - Configuration options
+    - Example usage
+    - Any limitations or known issues
 
 ## Creating a New MCP
 

@@ -29,10 +29,7 @@ export class CodeArchitectClient {
      * Create a new code architect client
      */
     constructor() {
-        this.client = new Client(
-            { name: 'MCP Code Architect Client', version: '1.0.0' },
-            { capabilities: {} },
-        );
+        this.client = new Client({ name: 'MCP Code Architect Client', version: '1.0.0' }, { capabilities: {} });
     }
 
     /**
@@ -67,10 +64,7 @@ export class CodeArchitectClient {
      * @param customInstructions Custom instructions for the implementation plan
      * @returns The implementation plan
      */
-    async generateImplementationPlan(
-        codeContext: string,
-        customInstructions: string,
-    ): Promise<CodeArchitectResult> {
+    async generateImplementationPlan(codeContext: string, customInstructions: string): Promise<CodeArchitectResult> {
         if (!this.connected) {
             await this.connect();
         }
@@ -85,23 +79,16 @@ export class CodeArchitectClient {
             });
 
             // Parse the result from the text content
-            if (
-                response.content &&
-                Array.isArray(response.content) &&
-                response.content.length > 0
-            ) {
+            if (response.content && Array.isArray(response.content) && response.content.length > 0) {
                 const textContent = response.content.find(
-                    (item: { type: string; text?: string }) =>
-                        item.type === 'text',
+                    (item: { type: string; text?: string }) => item.type === 'text',
                 );
                 if (textContent && 'text' in textContent) {
                     return JSON.parse(textContent.text) as CodeArchitectResult;
                 }
             }
 
-            throw new Error(
-                'Invalid response format from code architect server',
-            );
+            throw new Error('Invalid response format from code architect server');
         } catch (error) {
             console.error('Error generating implementation plan:', error);
             throw error;

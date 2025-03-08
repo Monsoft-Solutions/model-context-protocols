@@ -70,11 +70,7 @@ export async function startEraserDiagramServer(apiToken: string) {
         'generate_diagram',
         'Generates an Entity Relationship Diagram (ERD) or other diagram types using Eraser API',
         {
-            text: z
-                .string()
-                .describe(
-                    'The prompt. The input code or natural language which describes a diagram.',
-                ),
+            text: z.string().describe('The prompt. The input code or natural language which describes a diagram.'),
             diagramType: z
                 .enum([
                     'entity-relationship-diagram',
@@ -85,33 +81,23 @@ export async function startEraserDiagramServer(apiToken: string) {
                     'class-diagram',
                 ])
                 .optional()
-                .describe(
-                    'Select desired diagram type. Will automatically detect diagram type when unspecified.',
-                ),
+                .describe('Select desired diagram type. Will automatically detect diagram type when unspecified.'),
             theme: z
                 .enum(['light', 'dark'])
                 .optional()
-                .describe(
-                    'Select "light" or "dark" theme. Defaults to "light".',
-                ),
+                .describe('Select "light" or "dark" theme. Defaults to "light".'),
             mode: z
                 .enum(['standard', 'premium'])
                 .optional()
-                .describe(
-                    'Select "standard" for GPT-4o or "premium" for OpenAI-o1. Defaults to "standard"',
-                ),
+                .describe('Select "standard" for GPT-4o or "premium" for OpenAI-o1. Defaults to "standard"'),
             background: z
                 .boolean()
                 .optional()
-                .describe(
-                    'Select transparent (false) or solid (true) background. Defaults to false.',
-                ),
+                .describe('Select transparent (false) or solid (true) background. Defaults to false.'),
             scale: z
                 .enum(['1', '2', '3'])
                 .optional()
-                .describe(
-                    'Scale factor of returned image file. Use 1, 2, or 3. Defaults to 2.',
-                ),
+                .describe('Scale factor of returned image file. Use 1, 2, or 3. Defaults to 2.'),
         },
         async (args) => {
             const { text, diagramType, theme, mode, background, scale } = args;
@@ -137,8 +123,7 @@ export async function startEraserDiagramServer(apiToken: string) {
                 );
 
                 // Extract the diagram information
-                const { imageUrl, createEraserFileUrl, diagrams } =
-                    response.data;
+                const { imageUrl, createEraserFileUrl, diagrams } = response.data;
 
                 // Get the first diagram (there should only be one)
                 const diagram = diagrams[0];
@@ -162,20 +147,16 @@ export async function startEraserDiagramServer(apiToken: string) {
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     const statusCode = error.response?.status;
-                    const errorMessage =
-                        error.response?.data?.message || error.message;
+                    const errorMessage = error.response?.data?.message || error.message;
 
                     let userFriendlyMessage = 'Error generating diagram';
 
                     if (statusCode === 400) {
-                        userFriendlyMessage =
-                            'The request is missing required parameters';
+                        userFriendlyMessage = 'The request is missing required parameters';
                     } else if (statusCode === 403) {
-                        userFriendlyMessage =
-                            'Unauthorized. Please check your API token';
+                        userFriendlyMessage = 'Unauthorized. Please check your API token';
                     } else if (statusCode === 500) {
-                        userFriendlyMessage =
-                            'Eraser was unable to generate a result';
+                        userFriendlyMessage = 'Eraser was unable to generate a result';
                     } else if (statusCode === 503) {
                         userFriendlyMessage =
                             'Service temporarily unavailable. This may be the result of too many requests';

@@ -26,25 +26,25 @@ _List of available MCPs and brief descriptions will be added as they are develop
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/Monsoft-Solutions/model-context-protocols.git
-   cd model-context-protocols
-   ```
+    ```bash
+    git clone https://github.com/Monsoft-Solutions/model-context-protocols.git
+    cd model-context-protocols
+    ```
 
 2. Install dependencies:
 
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
 3. Build the project:
-   ```bash
-   npm run build
-   # or
-   yarn build
-   ```
+    ```bash
+    npm run build
+    # or
+    yarn build
+    ```
 
 ## Usage
 
@@ -66,14 +66,12 @@ Add the following to your Claude Desktop configuration file:
 
 ```json
 {
-  "mcpServers": {
-    "monsoft-mcp-name": {
-      "command": "node",
-      "args": [
-        "/full/path/to/model-context-protocols/mcp-name/dist/server/index.js"
-      ]
+    "mcpServers": {
+        "monsoft-mcp-name": {
+            "command": "node",
+            "args": ["/full/path/to/model-context-protocols/mcp-name/dist/server/index.js"]
+        }
     }
-  }
 }
 ```
 

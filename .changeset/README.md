@@ -25,9 +25,9 @@ This will prompt you to:
 
 1. Select the packages that have changed (use space to select, enter to confirm)
 2. Choose the type of version bump for each package:
-   - `major`: Breaking changes
-   - `minor`: New features (non-breaking)
-   - `patch`: Bug fixes and small changes
+    - `major`: Breaking changes
+    - `minor`: New features (non-breaking)
+    - `patch`: Bug fixes and small changes
 3. Write a summary of the changes
 
 The summary will be included in the changelog when the packages are published.
@@ -77,9 +77,9 @@ The workflow runs automatically when changes are pushed to the main branch.
 
 3. **Use the appropriate bump type**:
 
-   - `major`: Breaking changes that require users to update their code
-   - `minor`: New features that don't break existing functionality
-   - `patch`: Bug fixes and small changes that don't add features or break existing code
+    - `major`: Breaking changes that require users to update their code
+    - `minor`: New features that don't break existing functionality
+    - `patch`: Bug fixes and small changes that don't add features or break existing code
 
 4. **Review changesets before versioning**: Make sure all changes are properly documented before running `version-packages`.
 

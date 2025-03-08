@@ -6,6 +6,9 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+
         "skipLibCheck": true,
         "declaration": true,
         "outDir": "./dist",

@@ -12,9 +12,7 @@ async function main() {
         const apiToken = process.env.ERASER_API_TOKEN;
 
         if (!apiToken) {
-            console.error(
-                'Error: ERASER_API_TOKEN environment variable is not set',
-            );
+            console.error('Error: ERASER_API_TOKEN environment variable is not set');
             process.exit(1);
         }
 
