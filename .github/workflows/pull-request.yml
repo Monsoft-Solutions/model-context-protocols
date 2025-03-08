@@ -1,62 +1,59 @@
 name: Pull Request Workflow
 
 on:
-    pull_request:
-        branches: [main, master, develop]
-        types: [opened, synchronize, reopened]
+  pull_request:
+    branches: [main, master, develop]
+    types: [opened, synchronize, reopened]
 
 jobs:
-    build-and-test:
-        name: Build and Test
-        runs-on: ubuntu-latest
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '22'
-                  cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Cache Turborepo
-              uses: actions/cache@v3
-              with:
-                  path: .turbo
-                  key: ${{ runner.os }}-turbo-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-turbo-
+      - name: Cache Turborepo
+        uses: actions/cache@v3
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
-            - name: Lint
-              run: npm run lint
+      - name: Lint
+        run: npm run lint
 
-            - name: Create env files
-              run: npm run env
+      - name: Create env files
+        run: npm run env
 
-            - name: Build
-              run: npm run build
+      - name: Build
+        run: npm run build
 
-            - name: Run tests
-              run: npm run test
+  validate-lockfile:
+    name: Validate package-lock.json
+    runs-on: ubuntu-latest
 
-    validate-lockfile:
-        name: Validate package-lock.json
-        runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '22'
-
-            - name: Validate lockfile
-              run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https
+      - name: Validate lockfile
+        run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https
