@@ -48,10 +48,7 @@ async function main() {
         `;
 
         // Generate an implementation plan
-        const result = await codeArchitect.generateImplementationPlan(
-            codeContext,
-            customInstructions,
-        );
+        const result = await codeArchitect.generateImplementationPlan(codeContext, customInstructions);
 
         // Use the implementation plan
         console.log(result.implementationPlan);

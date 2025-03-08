@@ -134,10 +134,10 @@ The server will automatically look for the `.env` file in the appropriate locati
 #### Using the API
 
 ```javascript
-import { startGitHubProjectManagerServer } from "@monsoft/mcp-github-project-manager";
+import { startGitHubProjectManagerServer } from '@monsoft/mcp-github-project-manager';
 
 // Start the server with a token
-startGitHubProjectManagerServer("your_github_token");
+startGitHubProjectManagerServer('your_github_token');
 ```
 
 ## Available Tools
@@ -308,9 +308,9 @@ Parameters:
 - `body` (string, optional): The body text of the review
 - `event` (string, optional): The review action to perform ('APPROVE', 'REQUEST_CHANGES', or 'COMMENT')
 - `comments` (array, optional): Comments to post as part of the review, each with:
-  - `path` (string): The relative path to the file being commented on
-  - `position` (number): The position in the diff where the comment should be placed
-  - `body` (string): The text of the comment
+    - `path` (string): The relative path to the file being commented on
+    - `position` (number): The position in the diff where the comment should be placed
+    - `body` (string): The text of the comment
 
 #### list_pull_request_reviews
 

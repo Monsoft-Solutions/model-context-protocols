@@ -55,25 +55,16 @@ async function runExample() {
 
         // Generate an implementation plan
         console.log('Generating implementation plan...');
-        const result = await codeArchitect.generateImplementationPlan(
-            codeContext,
-            customInstructions,
-        );
+        const result = await codeArchitect.generateImplementationPlan(codeContext, customInstructions);
 
         // Display the implementation plan
         console.log('\nImplementation Plan:');
         console.log(result.implementationPlan);
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.error(
-                'Error running code architect example:',
-                error.message,
-            );
+            console.error('Error running code architect example:', error.message);
         } else {
-            console.error(
-                'Error running code architect example:',
-                String(error),
-            );
+            console.error('Error running code architect example:', String(error));
         }
     } finally {
         // Disconnect from the code architect server

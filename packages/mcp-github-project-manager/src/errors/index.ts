@@ -12,9 +12,7 @@ export class GitHubProjectManagerError extends Error {
  * Error for authentication issues
  */
 export class AuthenticationError extends GitHubProjectManagerError {
-    constructor(
-        message = 'Authentication failed. Please check your GitHub token.',
-    ) {
+    constructor(message = 'Authentication failed. Please check your GitHub token.') {
         super(message);
         this.name = 'AuthenticationError';
     }
@@ -57,9 +55,7 @@ export class RateLimitError extends GitHubProjectManagerError {
  * Error for network issues
  */
 export class NetworkError extends GitHubProjectManagerError {
-    constructor(
-        message = 'Network error occurred while communicating with GitHub API.',
-    ) {
+    constructor(message = 'Network error occurred while communicating with GitHub API.') {
         super(message);
         this.name = 'NetworkError';
     }
@@ -81,31 +77,19 @@ export function handleGitHubError(error: any): GitHubProjectManagerError {
                 return new ValidationError(error.message);
             case 429:
                 const resetTime = error.response?.headers?.['x-ratelimit-reset']
-                    ? new Date(
-                          parseInt(
-                              error.response.headers['x-ratelimit-reset'],
-                          ) * 1000,
-                      )
+                    ? new Date(parseInt(error.response.headers['x-ratelimit-reset']) * 1000)
                     : undefined;
                 return new RateLimitError(resetTime);
             default:
-                return new GitHubProjectManagerError(
-                    `GitHub API error: ${error.message}`,
-                );
+                return new GitHubProjectManagerError(`GitHub API error: ${error.message}`);
         }
     }
 
     // Network errors
-    if (
-        error.name === 'NetworkError' ||
-        error.code === 'ENOTFOUND' ||
-        error.code === 'ETIMEDOUT'
-    ) {
+    if (error.name === 'NetworkError' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
         return new NetworkError(error.message);
     }
 
     // Default case
-    return new GitHubProjectManagerError(
-        error.message || 'Unknown error occurred',
-    );
+    return new GitHubProjectManagerError(error.message || 'Unknown error occurred');
 }

@@ -32,10 +32,7 @@ const codeArchitect = new CodeArchitectClient();
 await codeArchitect.connect();
 
 // Generate an implementation plan
-const result = await codeArchitect.generateImplementationPlan(
-    codeContext,
-    customInstructions,
-);
+const result = await codeArchitect.generateImplementationPlan(codeContext, customInstructions);
 
 // Use the implementation plan
 console.log(result.implementationPlan);

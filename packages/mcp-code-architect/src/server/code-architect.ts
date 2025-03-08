@@ -33,9 +33,7 @@ export async function startCodeArchitectServer() {
         'Generates a detailed implementation plan based on code context and custom instructions',
         {
             codeContext: z.string().describe('The code context to analyze'),
-            customInstructions: z
-                .string()
-                .describe('Custom instructions for the implementation plan'),
+            customInstructions: z.string().describe('Custom instructions for the implementation plan'),
         },
         async (args) => {
             const { codeContext, customInstructions } = args;
@@ -43,9 +41,7 @@ export async function startCodeArchitectServer() {
             try {
                 // Validate API key
                 if (!ANTHROPIC_API_KEY) {
-                    throw new Error(
-                        'ANTHROPIC_API_KEY environment variable is not set',
-                    );
+                    throw new Error('ANTHROPIC_API_KEY environment variable is not set');
                 }
 
                 // Create the prompt for Claude
@@ -87,10 +83,7 @@ export async function startCodeArchitectServer() {
 
                 // Extract the implementation plan from Claude's response
                 const content = response.content[0];
-                const implementationPlan =
-                    typeof content === 'object' && 'text' in content
-                        ? content.text
-                        : '';
+                const implementationPlan = typeof content === 'object' && 'text' in content ? content.text : '';
 
                 const result: CodeArchitectResult = {
                     implementationPlan,

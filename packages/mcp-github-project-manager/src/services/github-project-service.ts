@@ -45,11 +45,10 @@ export class GitHubProjectService {
             try {
                 const { name, body } = params;
 
-                const response =
-                    await this.octokit.projects.createForAuthenticatedUser({
-                        name,
-                        body,
-                    });
+                const response = await this.octokit.projects.createForAuthenticatedUser({
+                    name,
+                    body,
+                });
 
                 return response.data;
             } catch (secondError) {

@@ -57,10 +57,7 @@ export class EraserDiagramClient {
      * Create a new eraser diagram client
      */
     constructor() {
-        this.client = new Client(
-            { name: 'MCP Eraser Diagram Client', version: '1.0.0' },
-            { capabilities: {} },
-        );
+        this.client = new Client({ name: 'MCP Eraser Diagram Client', version: '1.0.0' }, { capabilities: {} });
     }
 
     /**
@@ -124,11 +121,7 @@ export class EraserDiagramClient {
             });
 
             // Parse the result from the text content
-            if (
-                response.content &&
-                Array.isArray(response.content) &&
-                response.content.length > 0
-            ) {
+            if (response.content && Array.isArray(response.content) && response.content.length > 0) {
                 const textContent = response.content.find(
                     (item: { type: string; text?: string }) => item.type === 'text',
                 );
@@ -137,9 +130,7 @@ export class EraserDiagramClient {
                 }
             }
 
-            throw new Error(
-                'Invalid response format from eraser diagram server',
-            );
+            throw new Error('Invalid response format from eraser diagram server');
         } catch (error) {
             console.error('Error generating diagram:', error);
             throw error;
