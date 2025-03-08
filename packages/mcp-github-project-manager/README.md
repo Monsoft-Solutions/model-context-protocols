@@ -13,6 +13,19 @@ A Model Context Protocol (MCP) implementation for managing GitHub issues and pro
 - Add comments to issues
 - Close issues
 
+### GitHub Pull Request Management
+
+- Create pull requests
+- Update pull requests
+- List pull requests with filtering options
+- Get pull request details
+- Merge pull requests
+- Check if a pull request has been merged
+- Create and manage pull request reviews
+- Add and list review comments
+- Request and remove reviewers
+- Update pull request branches
+
 ### GitHub Project Management
 
 - Create projects
@@ -201,6 +214,180 @@ Parameters:
 - `repo` (string): Repository name
 - `issue_number` (number): Issue number
 - `body` (string): Comment text
+
+### Pull Request Management
+
+#### create_pull_request
+
+Create a new pull request in a GitHub repository.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `title` (string): Pull request title
+- `body` (string, optional): Pull request body/description
+- `head` (string): The name of the branch where your changes are implemented
+- `base` (string): The name of the branch you want the changes pulled into
+- `draft` (boolean, optional): Whether to create the pull request as a draft
+- `maintainer_can_modify` (boolean, optional): Whether maintainers can modify the pull request
+
+#### update_pull_request
+
+Update an existing pull request in a GitHub repository.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `title` (string, optional): New pull request title
+- `body` (string, optional): New pull request body
+- `state` (string, optional): New pull request state ('open' or 'closed')
+- `base` (string, optional): The name of the branch you want the changes pulled into
+- `maintainer_can_modify` (boolean, optional): Whether maintainers can modify the pull request
+
+#### list_pull_requests
+
+List pull requests in a GitHub repository with filtering options.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `state` (string, optional): Pull request state ('open', 'closed', or 'all')
+- `head` (string, optional): Filter by head branch
+- `base` (string, optional): Filter by base branch
+- `sort` (string, optional): Sort field ('created', 'updated', 'popularity', or 'long-running')
+- `direction` (string, optional): Sort direction ('asc' or 'desc')
+- `per_page` (number, optional): Results per page
+- `page` (number, optional): Page number
+
+#### get_pull_request
+
+Get details of a specific pull request in a GitHub repository.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+
+#### merge_pull_request
+
+Merge a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `commit_title` (string, optional): Title for the automatic commit message
+- `commit_message` (string, optional): Extra detail to append to automatic commit message
+- `merge_method` (string, optional): Merge method to use ('merge', 'squash', or 'rebase')
+
+#### is_pull_request_merged
+
+Check if a pull request has been merged.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+
+#### create_pull_request_review
+
+Create a review for a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `body` (string, optional): The body text of the review
+- `event` (string, optional): The review action to perform ('APPROVE', 'REQUEST_CHANGES', or 'COMMENT')
+- `comments` (array, optional): Comments to post as part of the review, each with:
+  - `path` (string): The relative path to the file being commented on
+  - `position` (number): The position in the diff where the comment should be placed
+  - `body` (string): The text of the comment
+
+#### list_pull_request_reviews
+
+List reviews for a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `per_page` (number, optional): Results per page
+- `page` (number, optional): Page number
+
+#### create_pull_request_review_comment
+
+Create a review comment for a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `body` (string): The text of the review comment
+- `commit_id` (string, optional): The SHA of the commit to comment on
+- `path` (string, optional): The relative path to the file being commented on
+- `position` (number, optional): The position in the diff where the comment should be placed
+- `in_reply_to` (number, optional): The comment ID to reply to
+
+#### list_pull_request_review_comments
+
+List review comments for a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `sort` (string, optional): Sort field ('created' or 'updated')
+- `direction` (string, optional): Sort direction ('asc' or 'desc')
+- `since` (string, optional): Only comments updated at or after this time are returned
+- `per_page` (number, optional): Results per page
+- `page` (number, optional): Page number
+
+#### request_reviewers
+
+Request reviewers for a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `reviewers` (string[], optional): Usernames of people to request a review from
+- `team_reviewers` (string[], optional): Names of teams to request a review from
+
+#### remove_requested_reviewers
+
+Remove requested reviewers from a pull request.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `reviewers` (string[]): Usernames of people to remove from the review request
+- `team_reviewers` (string[], optional): Names of teams to remove from the review request
+
+#### update_pull_request_branch
+
+Update a pull request branch with the latest upstream changes.
+
+Parameters:
+
+- `owner` (string): Repository owner (username or organization)
+- `repo` (string): Repository name
+- `pull_number` (number): Pull request number
+- `expected_head_sha` (string, optional): The expected SHA of the pull request head
 
 ### Project Management
 
