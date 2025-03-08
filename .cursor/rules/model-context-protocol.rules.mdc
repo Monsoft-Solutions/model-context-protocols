@@ -52,6 +52,9 @@ NOTE: After creating the package.json, run `npm i` to install the needed depende
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+
         "skipLibCheck": true,
         "declaration": true,
         "outDir": "./dist",

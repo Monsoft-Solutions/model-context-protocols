@@ -98,7 +98,7 @@ export class GitHubProjectService {
      */
     async updateProjectItem(params: UpdateProjectItemParams) {
         try {
-            const { project_id, item_id, column_id, position } = params;
+            const { item_id, column_id, position } = params;
 
             // If column_id is not provided, we can't move the card
             if (!column_id) {
