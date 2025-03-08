@@ -1,86 +1,104 @@
 ---
-description: Contains the rules for the Typescript code
+description: Guidelines to follow when implementating TypeScript code
 globs: *.ts, *.tsx, *.md
+alwaysApply: false
 ---
-// TypeScript Code Style and Best Practices
+# TypeScript Code Style and Best Practices
 
-// Type Definitions
-* Prefer `type` over `interface` for most type definitions
-* Use interfaces only when you need to take advantage of declaration merging
-* Use descriptive names for types that explain their purpose
-* Use PascalCase for type names and interfaces
-* Use readonly for properties that shouldn't be modified after initialization
-* Prefer union types over enums when possible
-* Use type aliases to simplify complex types
-* Implement only 1 type definition per file. NEVER define multiple types inside 1 file
-* The type files should be grouped inside the /types folder
+## Type Definitions
 
-// Functions
-* Use arrow functions for callbacks and anonymous functions
-* Explicitly type function parameters and return types
-* Use function overloads for complex function signatures
-* Prefer async/await over raw Promises when possible
-* Use optional parameters instead of multiple function signatures when appropriate
-* The parameters of the functions should be an object (e.g: data: {name: string, amount: number})
-* Always add a concise and clear documentation using JSDoc
+- Prefer `type` over `interface` for most type definitions.
+- Use `interfaces` only when leveraging declaration merging.
+- Use descriptive, meaningful names clearly explaining their purpose.
+- Use `PascalCase` for type names and interfaces.
+- Use `readonly` for properties that shouldn't change after initialization.
+- Prefer union types (`type`) over enums when possible.
+- Use type aliases to simplify complex type definitions.
+- Implement only one type definition per file; never define multiple types in a single file.
+- Group type definition files within a dedicated `/types` folder.
 
-// Variables and Constants
-* Use `const` by default, `let` only when necessary, never use `var`
-* Use camelCase for variable and function names
-* Prefix private class members with underscore (_)
-* Use PascalCase for class names and enum values
+## Functions
 
+- Use arrow functions for callbacks and anonymous functions.
+- Explicitly type all function parameters and return types.
+- Use function overloads for complex or conditional function signatures.
+- Prefer `async/await` syntax over raw Promises whenever possible.
+- Use optional parameters instead of multiple overloads when appropriate.
+- Parameters should be encapsulated within a descriptive object (e.g., `data: {name: string, amount: number}`).
+- Always include concise, clear documentation with JSDoc comments.
 
-// Imports and Exports
-* Use named exports always
-* Group imports by source (external libraries first, then internal modules)
-* Use absolute imports for external packages and alias imports for internal modules
+## Variables and Constants
 
-// Error Handling
-* Use typed error classes instead of generic Error
-* Always handle Promise rejections
-* Prefer try/catch blocks for synchronous code that may throw
+- Use `const` by default; use `let` only when reassignment is required. Never use `var`.
+- Follow `camelCase` for variable and function names.
+- Prefix private class members with an underscore (`_`).
+- Use `PascalCase` for class names and enum values.
 
-// Generics
-* Use generics to create reusable components
-* Use descriptive names for generic type parameters (T for type, K for key, etc.)
-* Constrain generic types when possible using extends
+## Imports and Exports
 
-// Classes
-* Minimize class inheritance, prefer composition
-* Define member visibility (public, private, protected)
-* Initialize class properties in the constructor when possible
-* Use getters and setters for computed properties
-* Always add a concise and clear documentation using JSDoc
-* Implement only 1 class definition per file. NEVER define multitple classes inside 1 file
+- Always use named exports; avoid default exports.
+- Group imports clearly by source:
+  1. External libraries
+  2. Internal modules
+- Use absolute imports for external packages.
+- Utilize alias imports for internal modules to enhance readability.
 
-// Nullability
-* Use undefined instead of null when possible
-* Use optional chaining (?.) and nullish coalescing (??) operators
-* Avoid non-null assertion operator (!) when possible
+## Error Handling
 
-// Code Organization
-* One class/type/enum per file
-* Group related functionality in namespaces or modules
-* Keep files under 300 lines when possible
+- Use strongly-typed error classes instead of generic `Error`.
+- Always handle Promise rejections explicitly.
+- Prefer `try/catch` blocks for synchronous code that may throw exceptions.
 
-// Comments and Documentation
-* Use JSDoc comments for public APIs
-* Document complex algorithms with inline comments
-* Use TODO comments for incomplete implementations
+## Generics
 
-// Testing
-* Write unit tests for all public functions
-* Use descriptive test names that explain the expected behavior
-* Mock external dependencies in tests
+- Leverage generics for reusable components.
+- Use descriptive names for generic type parameters (`T` for type, `K` for key, etc.).
+- Always constrain generic types using `extends` when practical.
 
-// Async Code
-* Use async/await instead of raw promises
-* Handle errors in async functions with try/catch
-* Avoid callback patterns in favor of promises
+## Classes
 
-// Strict Mode
-* Enable strict mode in tsconfig.json
-* Avoid using any type when possible
-* Use unknown instead of any when type is truly unknown
-* Enable noImplicitAny and strictNullChecks
+- Minimize class inheritance; favor composition for flexibility.
+- Explicitly define member visibility (`public`, `private`, `protected`).
+- Initialize class properties within constructors when possible.
+- Use getters and setters to encapsulate computed properties.
+- Always document classes and their methods clearly using JSDoc.
+- Limit each file to one class definition; never define multiple classes in a single file.
+
+## Nullability
+
+- Prefer using `undefined` instead of `null`.
+- Use optional chaining (`?.`) and nullish coalescing (`??`) operators to handle nullable values.
+- Avoid the non-null assertion operator (`!`) whenever possible.
+
+## Code Organization
+
+- Maintain one definition per file (class, type, enum).
+- Group related functionalities logically within namespaces or modules.
+- Aim to keep individual files under 300 lines for better maintainability.
+
+## Comments and Documentation
+
+- Use JSDoc consistently for documenting public APIs.
+- Clearly document complex algorithms and logic using inline comments.
+- Mark incomplete implementations with clearly defined `// TODO:` comments.
+
+## Async Code
+
+- Use `async/await` for better readability over raw promises.
+- Always handle errors in asynchronous functions using `try/catch`.
+- Avoid callback patterns; adopt Promise-based approaches.
+
+## Strict Mode and Type Safety
+
+- Enable `strict` mode in `tsconfig.json`.
+- Avoid using `any`; replace it with more specific types whenever possible.
+- Use `unknown` instead of `any` when the exact type is uncertain.
+- Enable `noImplicitAny` and `strictNullChecks` in TypeScript configuration.
+- Regularly review TypeScript rules and lint settings to enforce type safety.
+
+## Performance and Optimization
+
+- Avoid unnecessary computations and loops.
+- Use lazy initialization techniques when dealing with heavy resources.
+- Regularly profile and monitor performance-critical sections.
+
