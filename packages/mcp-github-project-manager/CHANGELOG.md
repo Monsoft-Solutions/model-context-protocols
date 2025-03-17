@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.0.0
+
+### Major Changes
+
+- d33d5f6: Refactor the main index.ts of the project, so it can be run with npx
+
 ## 0.0.3
 
 ### Patch Changes
