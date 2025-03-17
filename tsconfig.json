@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "Node16",
+        "moduleResolution": "Node16",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+
+        "skipLibCheck": true,
+        "declaration": true,
+        "outDir": "./dist",
+        "rootDir": "./src"
+    },
+    "include": ["packages/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

@@ -13,12 +13,6 @@ export async function startGitHubProjectManagerServer(token: string) {
     // Use provided token or environment variable
     const githubToken = token;
 
-    // Validate GitHub token
-    if (!githubToken) {
-        console.error('GITHUB_TOKEN environment variable is required');
-        process.exit(1);
-    }
-
     // Create services
     const issueService = new GitHubIssueService(githubToken);
     const projectService = new GitHubProjectService(githubToken);

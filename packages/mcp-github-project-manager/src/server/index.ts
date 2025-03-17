@@ -9,18 +9,16 @@ import { loadEnv } from '../config/env.js';
  * Start the MCP GitHub Project Manager server
  */
 async function main() {
-    try {
-        // Load environment variables from file
-        const env = loadEnv();
-        const token = env.GITHUB_PERSONAL_TOKEN;
+    // Load environment variables from file
+    const env = loadEnv();
+    const token = env.GITHUB_PERSONAL_TOKEN;
 
-        await startGitHubProjectManagerServer(token);
-        // The server will keep running until terminated
-    } catch (error) {
-        console.error('Error starting MCP GitHub Project Manager server:', error);
-        process.exit(1);
-    }
+    await startGitHubProjectManagerServer(token);
+    // The server will keep running until terminated
 }
 
 // Start the server
-main();
+main().catch((error) => {
+    console.error('Error starting MCP GitHub Project Manager server:', error);
+    process.exit(1);
+});
