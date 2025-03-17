@@ -9,6 +9,18 @@ export class GitHubProjectManagerError extends Error {
 }
 
 /**
+ * Error thrown when GitHub token is missing
+ */
+export class MissingGitHubTokenError extends Error {
+    constructor() {
+        super(
+            'GitHub personal access token is required. Please provide it using the --GITHUB_PERSONAL_TOKEN command line argument.',
+        );
+        this.name = 'MissingGitHubTokenError';
+    }
+}
+
+/**
  * Error for authentication issues
  */
 export class AuthenticationError extends GitHubProjectManagerError {

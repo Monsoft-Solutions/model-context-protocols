@@ -10,14 +10,11 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc && npm run copy-env",
-    "copy-env": "node scripts/copy-env-to-dist.js",
-    "dev": "ts-node --esm src/index.ts",
-    "start": "node dist/index.js",
-    "lint": "npx tsc --noEmit",
-    "example": "node scripts/run-example.js",
-    "setup": "node scripts/setup.js",
-    "generate-env": "node scripts/generate-env.js"
+    "build": "tsc",
+    "validate": "tsc --noEmit && npm run lint",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "example": "node scripts/run-example.js"
   },
   "keywords": [
     "mcp",
@@ -43,7 +40,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@octokit/rest": "^20.0.2",
-    "dotenv": "^16.3.1",
+    "yargs": "^17.7.2",
     "zod": "^3.22.4"
   }
 }
