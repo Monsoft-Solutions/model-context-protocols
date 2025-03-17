@@ -1,6 +1,6 @@
 {
   "name": "@monsoft/mcp-github-project-manager",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Model Context Protocol GitHub Project Manager implementation",
   "type": "module",
   "main": "dist/index.js",
