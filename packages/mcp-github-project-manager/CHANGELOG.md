@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.5.0
+
+### Minor Changes
+
+- e6179ae: feat: Implement SSE transport for GitHub Project Manager
+
 ## 1.4.0
 
 ### Minor Changes
