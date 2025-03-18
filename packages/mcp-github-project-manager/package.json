@@ -9,11 +9,11 @@
     "dist"
   ],
   "bin": {
-    "github-project-manager": "dist/server/index.js"
+    "github-project-manager": "dist/src/server/index.js"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "tsc && shx chmod +x dist/src/server/index.js",
     "validate": "tsc --noEmit && npm run lint",
     "test": "jest",
     "lint": "eslint src --ext .ts --config .eslintrc.cjs",
@@ -43,6 +43,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@octokit/rest": "^20.0.2",
+    "shx": "^0.4.0",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
   }
