@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.2.0
+
+### Minor Changes
+
+- 535776c: chore(package): Update dependencies and adjust build scripts
+
 ## 1.1.0
 
 ### Minor Changes
