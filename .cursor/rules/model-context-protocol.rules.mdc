@@ -1,124 +1,408 @@
 ---
 description: Guidelines to generate code for implementing a Model Context Protocol (MCP) Server and Client using the official TypeScript SDK.
-globs: packages/mcp-*/**.md
+globs: packages/mcp-*/docs/**.md
 alwaysApply: false
 ---
 Guidelines for generating MCP Server and Client implementations using the official TypeScript SDK, integrating Resources, Tools, and Prompts.
 
 ## ✅ Project Initialization
+
 - Initialize a new TypeScript project.
 
 ### Example `package.json` Structure:
+
 ```json
 {
-  "name": "@monsoft/server-example",
-  "version": "0.0.1",
-  "description": "Example MCP server",
-  "license": "MIT",
-  "author": "Monsoft Solutions (https://monsoftsolutions.com)",
-  "homepage": "https://modelcontextprotocol.io",
-  "bugs": "https://github.com/modelcontextprotocol/servers/issues",
-  "type": "module",
-  "bin": {
-    "mcp-server-example": "dist/server/index.js"
-  },
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc && shx chmod +x dist/*.js",
-    "prepare": "npm run build",
-    "watch": "tsc --watch"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.6.1",
-    "@types/node": "^22",
-    "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.23.5"
-  },
-  "devDependencies": {
-    "typescript": "^5.6.2"
-  }
+    "name": "@monsoft/server-example",
+    "version": "0.0.1",
+    "description": "Example MCP server",
+    "license": "MIT",
+    "author": "Monsoft Solutions (https://monsoftsolutions.com)",
+    "homepage": "https://github.com/Monsoft-Solutions/model-context-protocols",
+    "bugs": "https://github.com/Monsoft-Solutions/model-context-protocols/issues",
+    "type": "module",
+    "bin": {
+        "mcp-server-example": "dist/index.js"
+    },
+    "files": ["dist"],
+    "scripts": {
+        "build": "tsc && shx chmod +x dist/*.js",
+        "prepare": "npm run build",
+        "watch": "tsc --watch",
+        "validate": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.6.1",
+        "@types/node": "^22",
+        "zod": "^3.22.4",
+        "zod-to-json-schema": "^3.23.5",
+        "yargs": "^17.7.2"
+    },
+    "devDependencies": {
+        "typescript": "^5.6.2",
+        "shx": "^0.3.4"
+    }
 }
 ```
 
 NOTE: After creating the package.json, run `npm i` to install the needed dependencies.
 
-### Example of the tsconfig.json
-```
-{
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitAny": true,
-        "noUnusedLocals": true,
+---
 
-        "skipLibCheck": true,
-        "declaration": true,
-        "outDir": "./dist",
-        "rootDir": "./src"
-    },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist"]
+## 📁 Project Structure
+
+Follow this organized folder structure for your MCP implementation:
+
+```
+src/
+├── index.ts                 # Main entry point for the MCP
+├── config/
+│   └── env.ts               # Environment configuration with yargs
+├── tools/                   # MCP tools implementation
+│   └── index.ts             # Export all tools
+├── resources/               # MCP resources implementation
+│   └── index.ts             # Export all resources
+├── prompts/                 # MCP prompts implementation
+│   └── index.ts             # Export all prompts
+├── types/                   # Type definitions (one type per file)
+│   └── ...
+├── errors/                  # Custom error classes
+│   └── ...
+└── utils/                   # Utility functions
+    └── ...
+```
+
+### Entry Point Example (index.ts)
+
+```typescript
+#!/usr/bin/env node
+import { startServer } from './server.js';
+
+async function main() {
+    // Start the server - token will be loaded from env/CLI args
+    await startServer();
+    // The server will keep running until terminated
 }
 
+// Start the server
+main().catch((error) => {
+    console.error('Error starting MCP server:', error);
+    process.exit(1);
+});
+```
+
+### Environment Configuration (config/env.ts)
+
+Use yargs to parse command line arguments and validate environment variables:
+
+```typescript
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { z } from 'zod';
+import { EnvironmentValidationError } from '../errors/environment-validation-error.js';
+
+// Define the environment schema with zod
+export const envSchema = z.object({
+    API_TOKEN: z.string().min(1, 'API Token is required'),
+    ADDITIONAL_ENV_VALUE: z.string().optional(),
+    // Server configuration options
+    RUN_SSE: z.boolean().optional().default(false),
+    PORT: z.number().int().positive().optional().default(3000),
+});
+
+// Export the type derived from the schema
+export type Env = z.infer<typeof envSchema>;
+
+/**
+ * Loads environment variables from command line arguments and env vars.
+ * Run with: npx mcp-server-example --token=YOUR_TOKEN --additional-value=SOME_VALUE --run-sse --port=4000
+ * Or set environment variables API_TOKEN, ADDITIONAL_ENV_VALUE, RUN_SSE, PORT
+ *
+ * @returns {Env} Validated environment configuration
+ * @throws {EnvironmentValidationError} When environment validation fails
+ */
+export function loadEnv(): Env {
+    // Command line parsing with yargs
+    const argv = yargs(hideBin(process.argv))
+        .option('token', {
+            alias: 't',
+            description: 'API Token',
+            type: 'string',
+        })
+        .option('additional-value', {
+            alias: 'a',
+            description: 'Additional environment value',
+            type: 'string',
+        })
+        .option('run-sse', {
+            alias: 's',
+            description: 'Run server with SSE transport',
+            type: 'boolean',
+        })
+        .option('port', {
+            alias: 'p',
+            description: 'Port for HTTP server (when using SSE)',
+            type: 'number',
+        })
+        .help().argv;
+
+    // Priority: command line args > environment variables
+    const envData = {
+        API_TOKEN: argv.token,
+        ADDITIONAL_ENV_VALUE: argv.additionalValue,
+        RUN_SSE: argv.runSse,
+        PORT: argv.port,
+    };
+
+    try {
+        return envSchema.parse(envData);
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            const errorMessages = error.errors.map((err) => `${err.path.join('.')}: ${err.message}`).join('\n');
+
+            throw new EnvironmentValidationError(`Environment validation failed:\n${errorMessages}`);
+        }
+        throw error;
+    }
+}
+```
+
+### Environment Validation Error (errors/environment-validation-error.ts)
+
+```typescript
+/**
+ * Error thrown when environment variables validation fails
+ */
+export class EnvironmentValidationError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'EnvironmentValidationError';
+    }
+}
 ```
 
 ---
 
 ## 🚧 Server Implementation
 
-The main configuration of the server should contain the following. For the logic, let's create additional files with the implementation
+The main configuration of the server should contain the following. For the logic, create additional files with the implementation:
 
 ### Step 1: Create MCP Server
+
 ```typescript
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import express from 'express';
 import { z } from 'zod';
 
-const server = new McpServer({ name: 'YourServerName', version: '1.0.0' });
+// Import implementations from dedicated folders
+import { registerTools } from './tools/index.js';
+import { registerResources } from './resources/index.js';
+import { registerPrompts } from './prompts/index.js';
+import { loadEnv, type Env } from './config/env.js';
 
-// Define a static resource
-server.resource(
-  "config",
-  "config://app",
-  async (uri) => ({
-    contents: [{ uri: uri.href, text: "App configuration here" }]
-  })
-);
+/**
+ * Initializes and starts the MCP server with stdio transport
+ * @param {string} token API access token
+ * @returns {Promise<void>}
+ */
+export async function startExampleMcpServer(params?:{...}): Promise<void> {
+    // Create server instance
+    const server = new McpServer({
+        name: 'ExampleMcpServer',
+        version: '1.0.0',
+    });
 
-// Define a dynamic resource with parameters
-server.resource(
-  "user-profile",
-  new ResourceTemplate("users://{userId}/profile", { list: undefined }),
-  async (uri, { userId }) => ({
-    contents: [{ uri: uri.href, text: `Profile data for user ${userId}` }]
-  })
-);
+    // Register all components
+    registerResources(server);
+    registerTools(server);
+    registerPrompts(server);
 
-// Define a computational tool
-server.tool(
-  "calculate-bmi",
-  { weightKg: z.number(), heightM: z.number() },
-  async ({ weightKg, heightM }) => ({
-    content: [{ type: "text", text: String(weightKg / (heightM * heightM)) }]
-  })
-);
+    // Start the server with stdio transport
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+}
 
-// Define a reusable prompt
-define.prompt(
-  "review-code",
-  { code: z.string() },
-  ({ code }) => ({
-    messages: [{ role: "user", content: { type: "text", text: `Please review this code:\n\n${code}` } }]
-  })
-);
+/**
+ * Initializes and starts the MCP server with SSE transport
+ * @param {string} token API access token
+ * @param {number} port HTTP server port
+ * @returns {Promise<void>}
+ */
+export async function startExampleMcpServerSSE(port: number, params?: {}): Promise<void> {
+    // Create server instance
+    const server = new McpServer({
+        name: 'ExampleMcpServer',
+        version: '1.0.0',
+    });
 
-// Start the server with stdio transport
-const transport = new StdioServerTransport();
-await server.connect(transport);
+    // Register all components
+    registerResources(server);
+    registerTools(server);
+    registerPrompts(server);
+
+    // Set up Express app for SSE
+    const app = express();
+    let transport: SSEServerTransport | null = null;
+
+    app.get('/sse', async (req, res) => {
+        transport = new SSEServerTransport('/messages', res);
+        await server.connect(transport);
+    });
+
+    app.post('/messages', async (req, res) => {
+        // You need to keep a reference to the transport to handle messages
+        // This is a simplified example
+        if (transport) {
+            await transport.handlePostMessage(req, res);
+        } else {
+            const transport = getTransportForSession(req.body.sessionId);
+            if (transport) {
+                        await transport.handlePostMessage(req, res);
+            }
+        }
+    });
+
+    // Start the HTTP server
+    app.listen(port, () => {
+        console.log(`SSE server listening on port ${port}`);
+    });
+}
+
+/**
+ * Main server entry point with environment-based configuration
+ * @returns {Promise<void>}
+ */
+export async function startServer(): Promise<void> {
+    try {
+        // Load environment from command line or env vars
+        const env = loadEnv();
+
+        console.log(`Enviroment parsed and loaded`);
+
+        // Start server with appropriate transport based on configuration
+        if (env.RUN_SSE) {
+            console.log(`Starting server with SSE transport on port ${env.PORT}`);
+            await startExampleMcpServerSSE(env.PORT, params: {token: env.API_TOKEN});
+        } else {
+            console.log('Starting server with stdio transport');
+            await startExampleMcpServer(params: {token: env.API_TOKEN});
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(`Failed to start server: ${error.message}`);
+        } else {
+            console.error('Failed to start server with unknown error');
+        }
+        throw error;
+    }
+}
+
+// Helper function to manage transports (implementation would depend on your session management)
+function getTransportForSession(sessionId: string): SSEServerTransport | undefined {
+    // In a real implementation, you would store and retrieve transports by session ID
+    // This is just a placeholder
+    return undefined;
+}
+```
+
+### Resources Implementation Example (resources/index.ts)
+
+```typescript
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ExampleResource } from './example-resource.js';
+import { type Env } from '../config/env.js';
+
+export function registerResources(server: McpServer, token: string, env?: Env): void {
+    // Register all resources
+    ExampleResource.register(server, token);
+
+    // Example of a static resource
+    server.resource('config', 'config://app', async (uri) => ({
+        contents: [
+            {
+                uri: uri.href,
+                text: `App configuration here${env ? `\n- Additional Value: ${env.ADDITIONAL_ENV_VALUE}` : ''}`,
+            },
+        ],
+    }));
+
+    // Example of a dynamic resource with parameters
+    server.resource(
+        'user-profile',
+        new ResourceTemplate('users://{userId}/profile', { list: undefined }),
+        async (uri, { userId }) => ({
+            contents: [{ uri: uri.href, text: `Profile data for user ${userId}` }],
+        }),
+    );
+}
+```
+
+### Tools Implementation Example (tools/index.ts)
+
+```typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { ExampleTool } from './example-tool.js';
+import { type Env } from '../config/env.js';
+
+export function registerTools(server: McpServer, token: string, env?: Env): void {
+    // Register all tools
+    ExampleTool.register(server, token);
+
+    // Example of a computational tool
+    // the actual logic should not be here, but in an independent file
+    server.tool(
+        'calculate-bmi',
+        {
+            weightKg: z.number(),
+            heightM: z.number(),
+        },
+        async ({ weightKg, heightM }) => ({
+            content: [
+                {
+                    type: 'text',
+                    text:
+                        `BMI Result: ${(weightKg / (heightM * heightM)).toFixed(2)}` +
+                        `${env ? `\nEnvironment: ${env.ADDITIONAL_ENV_VALUE}` : ''}`,
+                },
+            ],
+        }),
+    );
+}
+```
+
+### Prompts Implementation Example (prompts/index.ts)
+
+```typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
+import { CodeReviewPrompt } from './code-review.js';
+
+export function registerPrompts(server: McpServer): void {
+    // Register all prompts
+    CodeReviewPrompt.register(server);
+
+    // Example of a reusable prompt
+    server.prompt(
+        'review-code',
+        {
+            code: z.string(),
+        },
+        ({ code }) => ({
+            messages: [
+                {
+                    role: 'user',
+                    content: {
+                        type: 'text',
+                        text: `Please review this code:\n\n${code}`,
+                    },
+                },
+            ],
+        }),
+    );
+}
 ```
 
 ---
@@ -126,23 +410,23 @@ await server.connect(transport);
 ## 🚧 Client Implementation
 
 ### Step 1: Create MCP Client
+
 ```typescript
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
-const client = new Client(
-  { name: 'YourClientName', version: '1.0.0' },
-  { capabilities: {} }
-);
+const client = new Client({ name: 'YourClientName', version: '1.0.0' }, { capabilities: {} });
 ```
 
 ### Step 2: Configure Client Transport
+
 ```typescript
 const transport = new StdioClientTransport({ command: 'path/to/mcp-server-executable-or-script' });
 await client.connect(transport);
 ```
 
 ### Step 3: Implement Client Logic
+
 ```typescript
 // Call a server tool
 const bmiResult = await client.executeTool('calculate-bmi', { weightKg: 70, heightM: 1.75 });
@@ -156,9 +440,11 @@ const userProfile = await client.getResource('users://123/profile');
 ## 🚀 Running the Server
 
 ### Using stdio
+
 Ideal for CLI or direct integrations.
 
 ### Using HTTP with SSE
+
 For remote setups, create endpoints to handle Server-Sent Events (SSE):
 
 ```typescript
@@ -168,13 +454,13 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 const app = express();
 const server = new McpServer({ name: 'example-server', version: '1.0.0' });
 
-app.get("/sse", async (req, res) => {
-  const transport = new SSEServerTransport("/messages", res);
-  await server.connect(transport);
+app.get('/sse', async (req, res) => {
+    const transport = new SSEServerTransport('/messages', res);
+    await server.connect(transport);
 });
 
-app.post("/messages", async (req, res) => {
-  await transport.handlePostMessage(req, res);
+app.post('/messages', async (req, res) => {
+    await transport.handlePostMessage(req, res);
 });
 
 app.listen(3001);
@@ -182,27 +468,84 @@ app.listen(3001);
 
 ---
 
-NOTE: DOn't generate tests for the package. I don't need them
+## 🛠️ Error Handling
+
+Create custom error classes for better error handling and debugging:
+
+```typescript
+// errors/api-error.ts
+export class ApiError extends Error {
+    constructor(
+        message: string,
+        public readonly statusCode?: number,
+        public readonly endpoint?: string,
+    ) {
+        super(message);
+        this.name = 'ApiError';
+    }
+}
+
+// Usage
+if (response.status !== 200) {
+    throw new ApiError(`Failed to fetch API data: ${response.statusText}`, response.status, endpoint);
+}
+```
 
 ---
 
 ## 📌 Code Standards and Best Practices
+
 - Follow modern TypeScript best practices (strict typing, async/await patterns).
-- Clearly comment components, maintain import/export consistency.
-- Logical file structure (separate server/client directories).
-- Prefer `type` over `interface`.
-- DON'T use `any`.
+- Clearly comment components using JSDoc for all exported functions, classes, and types.
+- Maintain a consistent and logical file structure:
+    - One type definition per file (function, class, type, etc.)
+    - Group related functionality in dedicated folders
+    - Use index files to export public APIs
+- Prefer `type` over `interface` for type definitions.
+- NEVER use `any` type - use proper typing or `unknown` when necessary.
+- Handle errors with custom error classes for better debugging.
+- Include proper validation for all inputs using zod.
 
 ---
 
 ## 📖 Documentation
-- Create a comprehensive README with setup instructions, examples, and details on client-server interactions.
-- Keep the README updated with new changes.
 
-## Finishing the devoloping of the MCP
-- Install the dependencies
-- Build the project
-- Fix any issues you detect on the build
+- Create a comprehensive README.md with:
+    - Project overview and purpose
+    - Installation instructions
+    - Usage examples
+    - Available resources, tools, and prompts
+    - Configuration options
+    - Troubleshooting section
+    - Links to related documentation
+- Include JSDoc comments for all public APIs.
+- Create examples demonstrating common use cases.
+- Keep documentation updated with new changes.
 
+---
 
+## 🚀 Finishing the Development
 
+Before considering your MCP implementation complete:
+
+1. Install all dependencies:
+
+    ```bash
+    npm install
+    ```
+
+2. Validate the TypeScript compilation:
+
+    ```bash
+    npm run validate
+    ```
+
+3. Build the project:
+
+    ```bash
+    npm run build
+    ```
+
+4. Fix any issues detected during validation or build.
+5. Test the MCP with various inputs to ensure proper functionality.
+6. Review the code for any potential improvements or optimizations.
