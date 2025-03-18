@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.1.0
+
+### Minor Changes
+
+- 4d03623: Update EsLint config and refactor error handling
+
 ## 1.0.0
 
 ### Major Changes
