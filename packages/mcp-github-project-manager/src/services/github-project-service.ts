@@ -148,7 +148,6 @@ export class GitHubProjectService {
                 });
 
                 // Add column information to each card
-                // @ts-ignore - Skip type checking for card mapping
                 const cardsWithColumn = cardsResponse.data.map((card) => ({
                     ...card,
                     column: {
