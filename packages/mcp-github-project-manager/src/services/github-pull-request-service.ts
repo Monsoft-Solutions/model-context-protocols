@@ -12,7 +12,7 @@ import {
     RequestReviewersParams,
     UpdatePullRequestBranchParams,
 } from '../types/index.js';
-import { handleGitHubError } from '../errors/index.js';
+import { GitHubError, handleGitHubError } from '../errors/index.js';
 
 /**
  * Service for managing GitHub pull requests
@@ -52,7 +52,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -78,7 +78,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -105,7 +105,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -126,7 +126,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -150,7 +150,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -170,11 +170,8 @@ export class GitHubPullRequestService {
             });
 
             return response.status === 204;
-        } catch (error: any) {
-            if (error.status === 404) {
-                return false;
-            }
-            throw handleGitHubError(error);
+        } catch (error) {
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -198,7 +195,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -221,7 +218,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -234,23 +231,36 @@ export class GitHubPullRequestService {
         try {
             const { owner, repo, pull_number, body, commit_id, path, position, in_reply_to } = params;
 
-            const requestParams: any = {
+            // Create parameters with required fields
+            const requestParams = {
                 owner,
                 repo,
                 pull_number,
                 body,
+                ...(commit_id && { commit_id }),
+                ...(path && { path }),
+                ...(position !== undefined && { position }),
+                ...(in_reply_to !== undefined && { in_reply_to }),
             };
 
-            if (commit_id) requestParams.commit_id = commit_id;
-            if (path) requestParams.path = path;
-            if (position !== undefined) requestParams.position = position;
-            if (in_reply_to !== undefined) requestParams.in_reply_to = in_reply_to;
+            // Ensure required parameters are present
+            if (!commit_id) {
+                throw new Error('commit_id is required for creating a review comment');
+            }
+            if (!path) {
+                throw new Error('path is required for creating a review comment');
+            }
 
-            const response = await this.octokit.pulls.createReviewComment(requestParams);
+            // Now we're sure commit_id and path are defined
+            const response = await this.octokit.pulls.createReviewComment({
+                ...requestParams,
+                commit_id: commit_id,
+                path: path,
+            });
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -276,7 +286,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -299,7 +309,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -330,7 +340,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -352,7 +362,7 @@ export class GitHubPullRequestService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 }

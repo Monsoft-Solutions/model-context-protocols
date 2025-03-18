@@ -6,7 +6,7 @@ import {
     AddIssueCommentParams,
     GetIssueParams,
 } from '../types/index.js';
-import { handleGitHubError } from '../errors/index.js';
+import { GitHubError, handleGitHubError } from '../errors/index.js';
 
 /**
  * Service for managing GitHub issues
@@ -45,7 +45,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -72,7 +72,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -117,7 +117,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -138,7 +138,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -160,7 +160,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -182,7 +182,7 @@ export class GitHubIssueService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 }

@@ -60,7 +60,7 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
             assignees: z.array(z.string()).optional().describe('GitHub usernames to assign to this issue'),
             milestone: z.number().optional().describe('Milestone number to associate with this issue'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const issue = await issueService.createIssue(args);
 
@@ -102,7 +102,7 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
             assignees: z.array(z.string()).optional().describe('GitHub usernames to assign'),
             milestone: z.number().nullable().optional().describe('Milestone to set'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const issue = await issueService.updateIssue(args);
 
@@ -148,24 +148,41 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
             mentioned: z.string().optional().describe('Filter by mentioned user'),
             milestone: z.string().optional().describe('Filter by milestone number or title'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const issues = await issueService.listIssues(args);
 
                 // Format the response to include only necessary information
-                const formattedIssues = issues.map((issue: any) => ({
-                    number: issue.number,
-                    title: issue.title,
-                    state: issue.state,
-                    html_url: issue.html_url,
-                    created_at: issue.created_at,
-                    updated_at: issue.updated_at,
-                    labels: issue.labels.map((label: any) => ({
-                        name: label.name,
-                        color: label.color,
-                    })),
-                    assignees: issue.assignees.map((assignee: any) => assignee.login),
-                }));
+                const formattedIssues = issues.map((issue) => {
+                    // Handle labels which can be strings or objects
+                    const formattedLabels = Array.isArray(issue.labels)
+                        ? issue.labels.map((label) => {
+                              if (typeof label === 'string') {
+                                  return { name: label, color: '' };
+                              }
+                              return {
+                                  name: label.name || '',
+                                  color: label.color || '',
+                              };
+                          })
+                        : [];
+
+                    // Handle assignees
+                    const formattedAssignees = Array.isArray(issue.assignees)
+                        ? issue.assignees.map((assignee) => assignee.login)
+                        : [];
+
+                    return {
+                        number: issue.number,
+                        title: issue.title,
+                        state: issue.state,
+                        html_url: issue.html_url,
+                        created_at: issue.created_at,
+                        updated_at: issue.updated_at,
+                        labels: formattedLabels,
+                        assignees: formattedAssignees,
+                    };
+                });
 
                 return {
                     content: [
@@ -194,7 +211,7 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
             repo: z.string().describe('Repository name'),
             issue_number: z.number().describe('Issue number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const issue = await issueService.getIssue(args);
 
@@ -208,11 +225,21 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
                     created_at: issue.created_at,
                     updated_at: issue.updated_at,
                     closed_at: issue.closed_at,
-                    labels: issue.labels.map((label: any) => ({
-                        name: label.name,
-                        color: label.color,
-                    })),
-                    assignees: issue.assignees?.map((assignee: any) => assignee.login) || [],
+                    labels: Array.isArray(issue.labels)
+                        ? issue.labels.map((label) => {
+                              if (typeof label === 'string') {
+                                  return { name: label, color: '' };
+                              }
+                              return {
+                                  name: label.name || '',
+                                  color: label.color || '',
+                              };
+                          })
+                        : [],
+                    assignees:
+                        issue.assignees?.map((assignee) =>
+                            typeof assignee === 'string' ? assignee : assignee.login,
+                        ) || [],
                     milestone: issue.milestone
                         ? {
                               number: issue.milestone.number,
@@ -249,7 +276,7 @@ function registerIssueTools(server: McpServer, issueService: GitHubIssueService)
             issue_number: z.number().describe('Issue number'),
             body: z.string().describe('Comment text'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const comment = await issueService.addIssueComment(args);
 
@@ -289,7 +316,7 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
             name: z.string().describe('Project name'),
             body: z.string().optional().describe('Project description'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const project = await projectService.createProject(args);
 
@@ -324,7 +351,7 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
             content_id: z.number().describe('Issue or PR ID'),
             content_type: z.enum(['Issue', 'PullRequest']).describe('Type of content to add'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const card = await projectService.addProjectItem(args);
 
@@ -362,7 +389,7 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                 .optional()
                 .describe('Position in the column (top, bottom, or specific position)'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 await projectService.updateProjectItem({
                     project_id: Number(args.project_id),
@@ -396,19 +423,18 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
             project_id: z.number().describe('Project ID'),
             column_id: z.number().optional().describe('Column ID to filter by'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const cards = await projectService.listProjectItems(args);
 
                 // Format the response
-                const formattedCards = cards.map((card: any) => ({
+                const formattedCards = cards.map((card) => ({
                     id: card.id,
                     url: card.url,
                     created_at: card.created_at,
                     updated_at: card.updated_at,
-                    column: card.column,
                     content_url: card.content_url,
-                    note: card.note,
+                    note: card.note || undefined,
                 }));
 
                 return {
@@ -448,7 +474,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             draft: z.boolean().optional().describe('Whether to create the pull request as a draft'),
             maintainer_can_modify: z.boolean().optional().describe('Whether maintainers can modify the pull request'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const pullRequest = await pullRequestService.createPullRequest(args);
 
@@ -489,7 +515,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             base: z.string().optional().describe('The name of the branch you want the changes pulled into'),
             maintainer_can_modify: z.boolean().optional().describe('Whether maintainers can modify the pull request'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const pullRequest = await pullRequestService.updatePullRequest(args);
 
@@ -531,7 +557,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             per_page: z.number().optional().describe('Results per page'),
             page: z.number().optional().describe('Page number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const pullRequests = await pullRequestService.listPullRequests(args);
 
@@ -568,7 +594,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             repo: z.string().describe('Repository name'),
             pull_number: z.number().describe('Pull request number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const pullRequest = await pullRequestService.getPullRequest(args);
 
@@ -617,7 +643,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             commit_message: z.string().optional().describe('Extra detail to append to automatic commit message'),
             merge_method: z.enum(['merge', 'squash', 'rebase']).optional().describe('Merge method to use'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const result = await pullRequestService.mergePullRequest(args);
 
@@ -649,7 +675,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             repo: z.string().describe('Repository name'),
             pull_number: z.number().describe('Pull request number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const { owner, repo, pull_number } = args;
                 const isMerged = await pullRequestService.isPullRequestMerged(owner, repo, pull_number);
@@ -695,7 +721,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
                 .optional()
                 .describe('Comments to post as part of the review'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const review = await pullRequestService.createPullRequestReview(args);
 
@@ -734,7 +760,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             per_page: z.number().optional().describe('Results per page'),
             page: z.number().optional().describe('Page number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const reviews = await pullRequestService.listPullRequestReviews(args);
 
@@ -776,7 +802,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             position: z.number().optional().describe('The position in the diff where the comment should be placed'),
             in_reply_to: z.number().optional().describe('The comment ID to reply to'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const comment = await pullRequestService.createPullRequestReviewComment(args);
 
@@ -817,7 +843,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             per_page: z.number().optional().describe('Results per page'),
             page: z.number().optional().describe('Page number'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const comments = await pullRequestService.listPullRequestReviewComments(args);
 
@@ -856,7 +882,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             reviewers: z.array(z.string()).optional().describe('Usernames of people to request a review from'),
             team_reviewers: z.array(z.string()).optional().describe('Names of teams to request a review from'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const pullRequest = await pullRequestService.requestReviewers(args);
 
@@ -892,7 +918,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             reviewers: z.array(z.string()).describe('Usernames of people to remove from the review request'),
             team_reviewers: z.array(z.string()).optional().describe('Names of teams to remove from the review request'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const { owner, repo, pull_number, reviewers, team_reviewers } = args;
                 const pullRequest = await pullRequestService.removeRequestedReviewers(
@@ -934,7 +960,7 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
             pull_number: z.number().describe('Pull request number'),
             expected_head_sha: z.string().optional().describe('The expected SHA of the pull request head'),
         },
-        async (args, _extra) => {
+        async (args) => {
             try {
                 const result = await pullRequestService.updatePullRequestBranch(args);
 
