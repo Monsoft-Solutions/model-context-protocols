@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.4.0
+
+### Minor Changes
+
+- 605524f: fix(package): fix path in package.json
+
 ## 1.3.0
 
 ### Minor Changes
