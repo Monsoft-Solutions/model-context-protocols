@@ -9,11 +9,14 @@ import { MissingGitHubTokenError } from '../errors/index.js';
  */
 export type EnvConfig = {
     GITHUB_PERSONAL_TOKEN: string;
-    [key: string]: string;
+    PORT: number;
+    RUN_SSE: number;
 };
 
 const envConfigSchema = z.object({
     GITHUB_PERSONAL_TOKEN: z.string().describe('GitHub personal access token'),
+    PORT: z.number().describe('Port to run the server on').optional().default(3010),
+    RUN_SSE: z.number().describe('Run the server in SSE mode').optional().default(0),
 });
 
 /**
@@ -29,9 +32,16 @@ const envConfigSchema = z.object({
 function parseArgs() {
     const args = yargs(hideBin(process.argv)).parse();
 
+    console.log(args);
+
     const envConfig = envConfigSchema.safeParse(args);
 
-    return envConfig.success ? envConfig.data : undefined;
+    if (!envConfig.success) {
+        console.error(envConfig.error);
+        return undefined;
+    }
+
+    return envConfig.data;
 }
 
 /**

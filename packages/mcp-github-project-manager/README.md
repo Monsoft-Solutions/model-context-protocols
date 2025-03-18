@@ -51,6 +51,36 @@ npx -y @monsoft/mcp-github-project-manager --GITHUB_PERSONAL_TOKEN=your_github_t
 
 This starts the MCP server which can then be connected to by MCP clients.
 
+### Transport Options
+
+The GitHub Project Manager supports two transport methods:
+
+#### Stdio Transport (Default)
+
+This is the default transport, ideal for direct CLI integrations and local usage:
+
+```bash
+# Start with default Stdio transport
+npx -y @monsoft/mcp-github-project-manager --GITHUB_PERSONAL_TOKEN=your_github_token_here
+```
+
+#### Server-Sent Events (SSE) Transport
+
+For remote setups and web integrations, you can use the SSE transport which starts an HTTP server:
+
+```bash
+# Start with SSE transport on default port (3010)
+npx -y @monsoft/mcp-github-project-manager --GITHUB_PERSONAL_TOKEN=your_github_token_here --RUN_SSE=1
+
+# Start with SSE transport on a custom port
+npx -y @monsoft/mcp-github-project-manager --GITHUB_PERSONAL_TOKEN=your_github_token_here --RUN_SSE=1 --PORT=8080
+```
+
+When using SSE transport, the server will be accessible at:
+
+- SSE endpoint: `http://localhost:<PORT>/sse`
+- Messages endpoint: `http://localhost:<PORT>/messages`
+
 ### Setting Up with MCP Clients
 
 To use this with AI assistants like Claude in Anthropic or Cursor:
@@ -79,6 +109,31 @@ When running your application, provide the GitHub token as a command-line argume
 
 ```bash
 node your-app.js --GITHUB_PERSONAL_TOKEN=your_github_token_here
+```
+
+You can also specify the transport type and other options:
+
+```bash
+# Use SSE transport
+node your-app.js --GITHUB_PERSONAL_TOKEN=your_github_token_here --RUN_SSE=1 --PORT=3010
+
+# Use default Stdio transport
+node your-app.js --GITHUB_PERSONAL_TOKEN=your_github_token_here
+```
+
+If you need to programmatically start the server with specific transport options:
+
+```typescript
+import {
+    startGitHubProjectManagerServer,
+    startGitHubProjectManagerServerSSE,
+} from '@monsoft/mcp-github-project-manager';
+
+// Start with Stdio transport
+await startGitHubProjectManagerServer('your_github_token_here');
+
+// Or start with SSE transport
+await startGitHubProjectManagerServerSSE('your_github_token_here', 3010);
 ```
 
 ## API Reference
