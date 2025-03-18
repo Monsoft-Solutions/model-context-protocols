@@ -1,23 +1,23 @@
 {
   "name": "@monsoft/mcp-github-project-manager",
-  "version": "0.0.2",
+  "version": "1.4.0",
   "description": "A Model Context Protocol GitHub Project Manager implementation",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "bin": {
-    "github-project-manager": "dist/server/index.js"
+    "github-project-manager": "dist/src/index.js"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc && npm run copy-env",
-    "copy-env": "node scripts/copy-env-to-dist.js",
-    "dev": "ts-node --esm src/index.ts",
-    "start": "node dist/index.js",
-    "lint": "npx tsc --noEmit",
-    "example": "node scripts/run-example.js",
-    "setup": "node scripts/setup.js",
-    "generate-env": "node scripts/generate-env.js"
+    "build": "tsc && shx chmod +x dist/src/*.js",
+    "validate": "tsc --noEmit && npm run lint",
+    "test": "jest",
+    "lint": "eslint src --ext .ts --config .eslintrc.cjs",
+    "example": "node scripts/run-example.js"
   },
   "keywords": [
     "mcp",
@@ -43,7 +43,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@octokit/rest": "^20.0.2",
-    "dotenv": "^16.3.1",
+    "shx": "^0.4.0",
+    "yargs": "^17.7.2",
     "zod": "^3.22.4"
   }
 }

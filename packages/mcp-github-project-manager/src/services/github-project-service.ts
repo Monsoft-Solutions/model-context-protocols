@@ -5,7 +5,7 @@ import {
     UpdateProjectItemParams,
     ListProjectItemsParams,
 } from '../types/index.js';
-import { handleGitHubError } from '../errors/index.js';
+import { GitHubError, handleGitHubError } from '../errors/index.js';
 
 /**
  * Service for managing GitHub projects
@@ -52,7 +52,7 @@ export class GitHubProjectService {
 
                 return response.data;
             } catch (secondError) {
-                throw handleGitHubError(secondError);
+                throw handleGitHubError(secondError as GitHubError);
             }
         }
     }
@@ -87,7 +87,7 @@ export class GitHubProjectService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -113,7 +113,7 @@ export class GitHubProjectService {
 
             return response.data;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 
@@ -148,7 +148,7 @@ export class GitHubProjectService {
                 });
 
                 // Add column information to each card
-                const cardsWithColumn = cardsResponse.data.map((card: any) => ({
+                const cardsWithColumn = cardsResponse.data.map((card) => ({
                     ...card,
                     column: {
                         id: column.id,
@@ -161,7 +161,7 @@ export class GitHubProjectService {
 
             return allCards;
         } catch (error) {
-            throw handleGitHubError(error);
+            throw handleGitHubError(error as GitHubError);
         }
     }
 }

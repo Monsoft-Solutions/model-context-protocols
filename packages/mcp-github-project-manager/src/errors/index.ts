@@ -9,6 +9,18 @@ export class GitHubProjectManagerError extends Error {
 }
 
 /**
+ * Error thrown when GitHub token is missing
+ */
+export class MissingGitHubTokenError extends Error {
+    constructor() {
+        super(
+            'GitHub personal access token is required. Please provide it using the --GITHUB_PERSONAL_TOKEN command line argument.',
+        );
+        this.name = 'MissingGitHubTokenError';
+    }
+}
+
+/**
  * Error for authentication issues
  */
 export class AuthenticationError extends GitHubProjectManagerError {
@@ -61,10 +73,18 @@ export class NetworkError extends GitHubProjectManagerError {
     }
 }
 
+// Define a looser error type for GitHub API errors
+// This type is used for `handleGitHubError` and allows for flexibility in error handling
+export interface GitHubError extends Error {
+    status?: number;
+    response?: { headers?: Record<string, string> };
+    code?: string;
+}
+
 /**
  * Error handler function to convert GitHub API errors to our custom errors
  */
-export function handleGitHubError(error: any): GitHubProjectManagerError {
+export function handleGitHubError(error: GitHubError): GitHubProjectManagerError {
     // Check if it's an Octokit error with status
     if (error.status) {
         switch (error.status) {
@@ -76,10 +96,11 @@ export function handleGitHubError(error: any): GitHubProjectManagerError {
             case 422:
                 return new ValidationError(error.message);
             case 429:
-                const resetTime = error.response?.headers?.['x-ratelimit-reset']
-                    ? new Date(parseInt(error.response.headers['x-ratelimit-reset']) * 1000)
-                    : undefined;
-                return new RateLimitError(resetTime);
+                return new RateLimitError(
+                    error.response?.headers?.['x-ratelimit-reset']
+                        ? new Date(parseInt(error.response.headers['x-ratelimit-reset']) * 1000)
+                        : undefined,
+                );
             default:
                 return new GitHubProjectManagerError(`GitHub API error: ${error.message}`);
         }
