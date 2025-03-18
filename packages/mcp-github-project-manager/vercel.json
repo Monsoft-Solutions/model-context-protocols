@@ -1,0 +1,32 @@
+{
+    "version": 2,
+    "functions": {
+        "api/github-mcp.js": {
+            "memory": 1024,
+            "maxDuration": 60
+        }
+    },
+    "routes": [
+        {
+            "src": "/mcp/github-pm/sse",
+            "dest": "/api/github-mcp"
+        },
+        {
+            "src": "/mcp/github-pm/messages",
+            "dest": "/api/github-mcp"
+        },
+        {
+            "src": "/api/github-mcp/(.*)",
+            "dest": "/api/github-mcp"
+        }
+    ],
+    "env": {
+        "GITHUB_PERSONAL_TOKEN": "@github_personal_token"
+    },
+    "builds": [
+        {
+            "src": "vercel/api/github-mcp.js",
+            "use": "@vercel/node"
+        }
+    ]
+}
