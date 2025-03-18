@@ -9,11 +9,11 @@
     "dist"
   ],
   "bin": {
-    "github-project-manager": "dist/src/server/index.js"
+    "github-project-manager": "dist/index.js"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc && shx chmod +x dist/src/server/index.js",
+    "build": "tsc && shx chmod +x dist/index.js",
     "validate": "tsc --noEmit && npm run lint",
     "test": "jest",
     "lint": "eslint src --ext .ts --config .eslintrc.cjs",
