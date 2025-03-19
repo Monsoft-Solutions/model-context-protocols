@@ -1,5 +1,11 @@
 # @monsoft/mcp-gmail
 
+## 0.4.0
+
+### Minor Changes
+
+- b2996b7: Implement new tools to interact with Gmail
+
 ## 0.3.0
 
 ### Minor Changes
