@@ -6,6 +6,7 @@ import { SearchOperationsTool } from './search-operations.js';
 import { LabelOperationsTool } from './label-operations.js';
 import { MessageManagementTool } from './message-management.js';
 import { BatchOperationsTool } from './batch-operations.js';
+import { SettingsManagementTool } from './settings-management.js';
 
 /**
  * Register Gmail tools with the MCP server
@@ -19,6 +20,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
     const labelOperations = new LabelOperationsTool(oauth2Client);
     const messageManagement = new MessageManagementTool(oauth2Client);
     const batchOperations = new BatchOperationsTool(oauth2Client);
+    const settingsManagement = new SettingsManagementTool(oauth2Client);
 
     // Email Operations
 
@@ -332,6 +334,55 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
         },
         async (params) => {
             return await batchOperations.batchMoveToTrash(params.messageIds);
+        },
+    );
+
+    // Settings Management
+
+    // Get Vacation Responder
+    server.tool('gmail_get_vacation_responder', {}, async () => {
+        return await settingsManagement.getVacationResponder();
+    });
+
+    // Set Vacation Responder
+    server.tool(
+        'gmail_set_vacation_responder',
+        {
+            enableAutoReply: z.boolean().describe('Whether the vacation responder is enabled'),
+            responseSubject: z.string().optional().describe('Subject line of the vacation responder'),
+            responseBodyPlainText: z.string().describe('Body of the vacation responder'),
+            responseBodyHtml: z.string().optional().describe('HTML body of the vacation responder'),
+            startTime: z.string().optional().describe('Start time of the vacation (in RFC 3339 format)'),
+            endTime: z.string().optional().describe('End time of the vacation (in RFC 3339 format)'),
+            restrictToContacts: z.boolean().optional().describe('Whether to restrict the responder to contacts only'),
+            restrictToDomain: z
+                .boolean()
+                .optional()
+                .describe('Whether to restrict the responder to domain contacts only'),
+        },
+        async (params) => {
+            return await settingsManagement.setVacationResponder(params);
+        },
+    );
+
+    // Get Forwarding
+    server.tool('gmail_get_forwarding', {}, async () => {
+        return await settingsManagement.getForwarding();
+    });
+
+    // Update Forwarding
+    server.tool(
+        'gmail_update_forwarding',
+        {
+            forwardingEmail: z.string().optional().describe('Email address to forward to'),
+            enabled: z.boolean().optional().describe('Whether the forwarding is enabled'),
+            disposition: z
+                .enum(['leaveInInbox', 'archive', 'trash', 'markRead'])
+                .optional()
+                .describe('What to do with the original email'),
+        },
+        async (params) => {
+            return await settingsManagement.updateForwarding(params);
         },
     );
 }

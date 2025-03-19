@@ -297,6 +297,49 @@ Restores an email from the trash.
 }
 ```
 
+### 14. Get Vacation Responder (`gmail_get_vacation_responder`)
+
+Gets the current auto-reply (out-of-office) settings.
+
+```json
+{}
+```
+
+### 15. Set Vacation Responder (`gmail_set_vacation_responder`)
+
+Configures auto-reply (out-of-office) settings.
+
+```json
+{
+    "enableAutoReply": true,
+    "responseSubject": "Out of Office",
+    "responseBodyPlainText": "I'm currently out of the office and will return on Monday.",
+    "startTime": "2024-07-01T08:00:00Z",
+    "endTime": "2024-07-15T17:00:00Z",
+    "restrictToContacts": true
+}
+```
+
+### 16. Get Forwarding (`gmail_get_forwarding`)
+
+Gets the current email forwarding settings.
+
+```json
+{}
+```
+
+### 17. Update Forwarding (`gmail_update_forwarding`)
+
+Modifies email forwarding settings.
+
+```json
+{
+    "forwardingEmail": "external@example.com",
+    "enabled": true,
+    "disposition": "archive"
+}
+```
+
 ### Batch Email Operations
 
 - `gmail_batch_delete` - Delete multiple emails in a single operation
@@ -477,10 +520,10 @@ The following Gmail API tools are planned for future implementation:
 
 ### Settings Management
 
-- `get_vacation_responder` - Get auto-reply settings
-- `set_vacation_responder` - Configure out-of-office responses
-- `get_forwarding` - Get email forwarding settings
-- `update_forwarding` - Modify email forwarding settings
+- ✅ `gmail_get_vacation_responder` - Get auto-reply settings
+- ✅ `gmail_set_vacation_responder` - Configure out-of-office responses
+- ✅ `gmail_get_forwarding` - Get email forwarding settings
+- ✅ `gmail_update_forwarding` - Modify email forwarding settings
 
 ### Message Actions
 
