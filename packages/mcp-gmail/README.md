@@ -297,6 +297,81 @@ Restores an email from the trash.
 }
 ```
 
+### Batch Email Operations
+
+- `gmail_batch_delete` - Delete multiple emails in a single operation
+- `gmail_batch_modify` - Apply or remove labels from multiple emails at once
+- `gmail_batch_mark_as_read` - Mark multiple emails as read in a single operation
+- `gmail_batch_mark_as_unread` - Mark multiple emails as unread in a single operation
+- `gmail_batch_archive` - Archive multiple emails in a single operation
+- `gmail_batch_move_to_trash` - Move multiple emails to trash in a single operation
+
+## Batch Operations
+
+Gmail MCP Server provides powerful batch operations for managing multiple emails simultaneously:
+
+### 1. Batch Delete Emails (`gmail_batch_delete`)
+
+Delete multiple emails in a single operation.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"]
+}
+```
+
+### 2. Batch Modify Emails (`gmail_batch_modify`)
+
+Apply or remove labels from multiple emails at once.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"],
+    "addLabelIds": ["IMPORTANT"],
+    "removeLabelIds": ["INBOX"]
+}
+```
+
+### 3. Batch Mark as Read (`gmail_batch_mark_as_read`)
+
+Mark multiple emails as read in a single operation.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"]
+}
+```
+
+### 4. Batch Mark as Unread (`gmail_batch_mark_as_unread`)
+
+Mark multiple emails as unread in a single operation.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"]
+}
+```
+
+### 5. Batch Archive Emails (`gmail_batch_archive`)
+
+Archive multiple emails in a single operation.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"]
+}
+```
+
+### 6. Batch Move to Trash (`gmail_batch_move_to_trash`)
+
+Move multiple emails to trash in a single operation.
+
+```json
+{
+    "messageIds": ["182ab45cd67ef", "182ab45cd68ab"]
+}
+```
+
 ## Advanced Search Syntax
 
 The `search_emails` tool supports Gmail's powerful search operators:
@@ -418,3 +493,12 @@ The following Gmail API tools are planned for future implementation:
 ### Advanced Search
 
 - ✅ `search_with_filters` - Search with complex criteria (date ranges, attachments, etc.)
+
+### Batch Email Operations
+
+- ✅ `batch_delete` - Delete multiple emails in a single operation
+- ✅ `batch_modify` - Apply or remove labels from multiple emails at once
+- ✅ `batch_mark_as_read` - Mark multiple emails as read in a single operation
+- ✅ `batch_mark_as_unread` - Mark multiple emails as unread in a single operation
+- ✅ `batch_archive` - Archive multiple emails in a single operation
+- ✅ `batch_move_to_trash` - Move multiple emails to trash in a single operation

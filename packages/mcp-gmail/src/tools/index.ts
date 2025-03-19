@@ -5,6 +5,7 @@ import { EmailOperationsTool } from './email-operations.js';
 import { SearchOperationsTool } from './search-operations.js';
 import { LabelOperationsTool } from './label-operations.js';
 import { MessageManagementTool } from './message-management.js';
+import { BatchOperationsTool } from './batch-operations.js';
 
 /**
  * Register Gmail tools with the MCP server
@@ -17,6 +18,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
     const searchOperations = new SearchOperationsTool(oauth2Client);
     const labelOperations = new LabelOperationsTool(oauth2Client);
     const messageManagement = new MessageManagementTool(oauth2Client);
+    const batchOperations = new BatchOperationsTool(oauth2Client);
 
     // Email Operations
 
@@ -193,6 +195,76 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
         },
         async (params) => {
             return await messageManagement.recoverFromTrash(params.messageId);
+        },
+    );
+
+    // Batch Operations
+
+    // Batch Delete Emails
+    server.tool(
+        'gmail_batch_delete',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to delete'),
+        },
+        async (params) => {
+            return await batchOperations.batchDelete(params.messageIds);
+        },
+    );
+
+    // Batch Modify Emails
+    server.tool(
+        'gmail_batch_modify',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to modify'),
+            addLabelIds: z.array(z.string()).optional().describe('List of label IDs to add to the messages'),
+            removeLabelIds: z.array(z.string()).optional().describe('List of label IDs to remove from the messages'),
+        },
+        async (params) => {
+            return await batchOperations.batchModify(params.messageIds, params.addLabelIds, params.removeLabelIds);
+        },
+    );
+
+    // Batch Mark as Read
+    server.tool(
+        'gmail_batch_mark_as_read',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to mark as read'),
+        },
+        async (params) => {
+            return await batchOperations.batchMarkAsRead(params.messageIds);
+        },
+    );
+
+    // Batch Mark as Unread
+    server.tool(
+        'gmail_batch_mark_as_unread',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to mark as unread'),
+        },
+        async (params) => {
+            return await batchOperations.batchMarkAsUnread(params.messageIds);
+        },
+    );
+
+    // Batch Archive Emails
+    server.tool(
+        'gmail_batch_archive',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to archive'),
+        },
+        async (params) => {
+            return await batchOperations.batchArchive(params.messageIds);
+        },
+    );
+
+    // Batch Move to Trash
+    server.tool(
+        'gmail_batch_move_to_trash',
+        {
+            messageIds: z.array(z.string()).describe('Array of email message IDs to move to trash'),
+        },
+        async (params) => {
+            return await batchOperations.batchMoveToTrash(params.messageIds);
         },
     );
 }
