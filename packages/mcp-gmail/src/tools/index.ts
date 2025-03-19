@@ -128,6 +128,73 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
         return await labelOperations.listEmailLabels();
     });
 
+    // Create Label
+    server.tool(
+        'gmail_create_label',
+        {
+            name: z.string().describe('Name of the label to create'),
+            messageListVisibility: z
+                .enum(['show', 'hide'])
+                .optional()
+                .describe('Visibility in message list view (show/hide)'),
+            labelListVisibility: z
+                .enum(['labelShow', 'labelShowIfUnread', 'labelHide'])
+                .optional()
+                .describe('Visibility in label list (show/hide/showIfUnread)'),
+            backgroundColor: z.string().optional().describe('Background color of the label (hex code)'),
+            textColor: z.string().optional().describe('Text color of the label (hex code)'),
+        },
+        async (params) => {
+            return await labelOperations.createLabel(
+                params.name,
+                params.messageListVisibility,
+                params.labelListVisibility,
+                params.backgroundColor,
+                params.textColor,
+            );
+        },
+    );
+
+    // Update Label
+    server.tool(
+        'gmail_update_label',
+        {
+            labelId: z.string().describe('ID of the label to update'),
+            name: z.string().optional().describe('New name for the label'),
+            messageListVisibility: z
+                .enum(['show', 'hide'])
+                .optional()
+                .describe('Visibility in message list view (show/hide)'),
+            labelListVisibility: z
+                .enum(['labelShow', 'labelShowIfUnread', 'labelHide'])
+                .optional()
+                .describe('Visibility in label list (show/hide/showIfUnread)'),
+            backgroundColor: z.string().optional().describe('Background color of the label (hex code)'),
+            textColor: z.string().optional().describe('Text color of the label (hex code)'),
+        },
+        async (params) => {
+            return await labelOperations.updateLabel(
+                params.labelId,
+                params.name,
+                params.messageListVisibility,
+                params.labelListVisibility,
+                params.backgroundColor,
+                params.textColor,
+            );
+        },
+    );
+
+    // Delete Label
+    server.tool(
+        'gmail_delete_label',
+        {
+            labelId: z.string().describe('ID of the label to delete'),
+        },
+        async (params) => {
+            return await labelOperations.deleteLabel(params.labelId);
+        },
+    );
+
     // Message Management Operations
 
     // Delete Email

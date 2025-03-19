@@ -471,9 +471,9 @@ The following Gmail API tools are planned for future implementation:
 
 ### Label Management
 
-- `create_label` - Create a new Gmail label
-- `update_label` - Modify an existing label
-- `delete_label` - Remove a custom label
+- ✅ `create_label` - Create a new Gmail label
+- ✅ `update_label` - Modify an existing label
+- ✅ `delete_label` - Remove a custom label
 
 ### Settings Management
 
