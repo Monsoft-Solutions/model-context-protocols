@@ -37,8 +37,6 @@ export async function startGitHubProjectManagerServer(token: string) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
 
-    console.log('MCP GitHub Project Manager server started');
-
     // Keep the server running
     return server;
 }

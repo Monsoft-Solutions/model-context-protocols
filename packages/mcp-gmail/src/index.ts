@@ -18,13 +18,9 @@ async function main() {
             process.exit(0);
         } else {
             // Run in server mode
-            console.log('Starting Gmail MCP server...');
-
             if (env.RUN_SSE) {
-                console.log(`Using SSE transport on port ${env.PORT}`);
                 await startGmailMcpServerSSE(env);
             } else {
-                console.log('Using stdio transport');
                 await startGmailMcpServer(env);
             }
         }

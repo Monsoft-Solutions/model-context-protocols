@@ -25,8 +25,8 @@ export async function startGmailMcpServer(env: Env): Promise<void> {
 
         // Create server instance
         const server = new McpServer({
-            name: 'gmail',
-            version: '1.0.0',
+            name: 'Gmail Email Integration MCP',
+            version: '0.2.0',
         });
 
         // Register all tools
@@ -54,8 +54,8 @@ export async function startGmailMcpServerSSE(env: Env): Promise<void> {
 
         // Create server instance
         const server = new McpServer({
-            name: 'gmail',
-            version: '1.0.0',
+            name: 'Gmail Email Integration MCP',
+            version: '0.2.0',
         });
 
         // Register all tools
