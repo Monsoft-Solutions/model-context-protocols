@@ -1,18 +1,19 @@
 {
-  "name": "@gongrzhe/server-gmail-autoauth-mcp",
-  "version": "1.1.1",
+  "name": "@monsoft/mcp-gmail",
+  "version": "1.0.0",
   "description": "Gmail MCP server with auto authentication support",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "gmail-mcp": "./dist/index.js"
+    "mcp-gmail": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && shx chmod +x dist/index.js",
     "start": "node dist/index.js",
     "auth": "node dist/index.js auth",
+    "dev": "tsc --watch",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run build"
+    "validate": "tsc --noEmit"
   },
   "files": [
     "dist",
@@ -26,19 +27,18 @@
     "oauth",
     "model-context-protocol",
     "google-gmail",
-    "claude",
-    "auto-auth"
+    "claude"
   ],
-  "author": "gongrzhe",
-  "license": "ISC",
+  "author": "Monsoft Solutions (https://monsoftsolutions.com)",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gongrzhe/server-gmail-autoauth-mcp.git"
+    "url": "git+https://github.com/monsoft-solutions/model-context-protocols.git"
   },
   "bugs": {
-    "url": "https://github.com/gongrzhe/server-gmail-autoauth-mcp/issues"
+    "url": "https://github.com/monsoft-solutions/model-context-protocols/issues"
   },
-  "homepage": "https://github.com/gongrzhe/server-gmail-autoauth-mcp#readme",
+  "homepage": "https://github.com/monsoft-solutions/model-context-protocols#readme",
   "publishConfig": {
     "access": "public"
   },
@@ -46,15 +46,20 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.4.0",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "express": "^4.18.2",
     "googleapis": "^129.0.0",
     "google-auth-library": "^9.4.1",
     "open": "^10.0.0",
+    "yargs": "^17.7.2",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.22.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^20.10.5",
+    "@types/yargs": "^17.0.32",
+    "shx": "^0.3.4",
     "typescript": "^5.3.3"
   }
 }
