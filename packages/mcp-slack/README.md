@@ -1,6 +1,6 @@
 # Slack MCP Server
 
-MCP Server for the Slack API, enabling Claude to interact with Slack workspaces.
+MCP Server for the Slack API
 
 ## Tools
 
@@ -105,7 +105,7 @@ Add the following to your `claude_desktop_config.json`:
     "mcpServers": {
         "slack": {
             "command": "npx",
-            "args": ["-y", "@modelcontextprotocol/server-slack"],
+            "args": ["-y", "@monsoft/mcp-slack"],
             "env": {
                 "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
                 "SLACK_TEAM_ID": "T01234567"
@@ -116,21 +116,6 @@ Add the following to your `claude_desktop_config.json`:
 ```
 
 #### docker
-
-```json
-{
-    "mcpServers": {
-        "slack": {
-            "command": "docker",
-            "args": ["run", "-i", "--rm", "-e", "SLACK_BOT_TOKEN", "-e", "SLACK_TEAM_ID", "mcp/slack"],
-            "env": {
-                "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
-                "SLACK_TEAM_ID": "T01234567"
-            }
-        }
-    }
-}
-```
 
 ### Troubleshooting
 
@@ -144,10 +129,6 @@ If you encounter permission errors, verify that:
 ## Build
 
 Docker build:
-
-```bash
-docker build -t mcp/slack -f src/slack/Dockerfile .
-```
 
 ## License
 
