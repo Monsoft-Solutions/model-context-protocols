@@ -1,7 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
-import { GmailTools } from './gmail-tools.js';
+import { EmailOperationsTool } from './email-operations.js';
+import { SearchOperationsTool } from './search-operations.js';
+import { LabelOperationsTool } from './label-operations.js';
+import { MessageManagementTool } from './message-management.js';
 
 /**
  * Register Gmail tools with the MCP server
@@ -10,7 +13,12 @@ import { GmailTools } from './gmail-tools.js';
  * @param oauth2Client - The authenticated OAuth2 client
  */
 export function registerTools(server: McpServer, oauth2Client: OAuth2Client): void {
-    const gmailTools = new GmailTools(oauth2Client);
+    const emailOperations = new EmailOperationsTool(oauth2Client);
+    const searchOperations = new SearchOperationsTool(oauth2Client);
+    const labelOperations = new LabelOperationsTool(oauth2Client);
+    const messageManagement = new MessageManagementTool(oauth2Client);
+
+    // Email Operations
 
     // Send Email
     server.tool(
@@ -23,7 +31,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             bcc: z.array(z.string()).optional().describe('List of BCC recipients'),
         },
         async (params) => {
-            return await gmailTools.handleEmailAction('send', params);
+            return await emailOperations.handleEmailAction('send', params);
         },
     );
 
@@ -38,7 +46,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             bcc: z.array(z.string()).optional().describe('List of BCC recipients'),
         },
         async (params) => {
-            return await gmailTools.handleEmailAction('draft', params);
+            return await emailOperations.handleEmailAction('draft', params);
         },
     );
 
@@ -49,9 +57,11 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             messageId: z.string().describe('ID of the email message to retrieve'),
         },
         async (params) => {
-            return await gmailTools.readEmail(params.messageId);
+            return await emailOperations.readEmail(params.messageId);
         },
     );
+
+    // Search Operations
 
     // Search Emails
     server.tool(
@@ -61,7 +71,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             maxResults: z.number().optional().describe('Maximum number of results to return'),
         },
         async (params) => {
-            return await gmailTools.searchEmails(params.query, params.maxResults);
+            return await searchOperations.searchEmails(params.query, params.maxResults);
         },
     );
 
@@ -86,11 +96,13 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             maxResults: z.number().optional().describe('Maximum number of results to return'),
         },
         async (params) => {
-            return await gmailTools.searchWithFilters(params);
+            return await searchOperations.searchWithFilters(params);
         },
     );
 
-    // Modify Email
+    // Label Operations
+
+    // Modify Email Labels
     server.tool(
         'gmail_modify_email',
         {
@@ -100,7 +112,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             removeLabelIds: z.array(z.string()).optional().describe('List of label IDs to remove from the message'),
         },
         async (params) => {
-            return await gmailTools.modifyEmail(
+            return await labelOperations.modifyEmail(
                 params.messageId,
                 params.labelIds,
                 params.addLabelIds,
@@ -109,6 +121,13 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
         },
     );
 
+    // List Email Labels
+    server.tool('gmail_list_email_labels', {}, async () => {
+        return await labelOperations.listEmailLabels();
+    });
+
+    // Message Management Operations
+
     // Delete Email
     server.tool(
         'gmail_delete_email',
@@ -116,12 +135,64 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
             messageId: z.string().describe('ID of the email message to delete'),
         },
         async (params) => {
-            return await gmailTools.deleteEmail(params.messageId);
+            return await messageManagement.deleteEmail(params.messageId);
         },
     );
 
-    // List Email Labels
-    server.tool('gmail_list_email_labels', {}, async () => {
-        return await gmailTools.listEmailLabels();
-    });
+    // New Tools
+
+    // Mark as Read
+    server.tool(
+        'gmail_mark_as_read',
+        {
+            messageId: z.string().describe('ID of the email message to mark as read'),
+        },
+        async (params) => {
+            return await messageManagement.markAsRead(params.messageId);
+        },
+    );
+
+    // Mark as Unread
+    server.tool(
+        'gmail_mark_as_unread',
+        {
+            messageId: z.string().describe('ID of the email message to mark as unread'),
+        },
+        async (params) => {
+            return await messageManagement.markAsUnread(params.messageId);
+        },
+    );
+
+    // Archive Email
+    server.tool(
+        'gmail_archive_email',
+        {
+            messageId: z.string().describe('ID of the email message to archive'),
+        },
+        async (params) => {
+            return await messageManagement.archiveEmail(params.messageId);
+        },
+    );
+
+    // Move to Trash
+    server.tool(
+        'gmail_move_to_trash',
+        {
+            messageId: z.string().describe('ID of the email message to move to trash'),
+        },
+        async (params) => {
+            return await messageManagement.moveToTrash(params.messageId);
+        },
+    );
+
+    // Recover from Trash
+    server.tool(
+        'gmail_recover_from_trash',
+        {
+            messageId: z.string().describe('ID of the email message to recover from trash'),
+        },
+        async (params) => {
+            return await messageManagement.recoverFromTrash(params.messageId);
+        },
+    );
 }

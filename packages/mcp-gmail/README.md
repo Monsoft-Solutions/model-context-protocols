@@ -247,6 +247,56 @@ Key filter parameters:
 - `labels` - Filter by specific Gmail labels
 - `maxResults` - Maximum number of results to return
 
+### 9. Mark as Read (`gmail_mark_as_read`)
+
+Marks an email as read.
+
+```json
+{
+    "messageId": "182ab45cd67ef"
+}
+```
+
+### 10. Mark as Unread (`gmail_mark_as_unread`)
+
+Marks an email as unread.
+
+```json
+{
+    "messageId": "182ab45cd67ef"
+}
+```
+
+### 11. Archive Email (`gmail_archive_email`)
+
+Moves an email out of the inbox (archives it).
+
+```json
+{
+    "messageId": "182ab45cd67ef"
+}
+```
+
+### 12. Move to Trash (`gmail_move_to_trash`)
+
+Moves an email to the trash.
+
+```json
+{
+    "messageId": "182ab45cd67ef"
+}
+```
+
+### 13. Recover from Trash (`gmail_recover_from_trash`)
+
+Restores an email from the trash.
+
+```json
+{
+    "messageId": "182ab45cd67ef"
+}
+```
+
 ## Advanced Search Syntax
 
 The `search_emails` tool supports Gmail's powerful search operators:
@@ -359,12 +409,12 @@ The following Gmail API tools are planned for future implementation:
 
 ### Message Actions
 
-- `mark_as_read` - Mark messages as read
-- `mark_as_unread` - Mark messages as unread
-- `archive_email` - Move messages to archive
-- `move_to_trash` - Move messages to trash
-- `recover_from_trash` - Restore messages from trash
+- ✅ `mark_as_read` - Mark messages as read
+- ✅ `mark_as_unread` - Mark messages as unread
+- ✅ `archive_email` - Move messages to archive
+- ✅ `move_to_trash` - Move messages to trash
+- ✅ `recover_from_trash` - Restore messages from trash
 
 ### Advanced Search
 
-- `search_with_filters` - Search with complex criteria (date ranges, attachments, etc.)
+- ✅ `search_with_filters` - Search with complex criteria (date ranges, attachments, etc.)

@@ -56,9 +56,7 @@ export async function startGitHubProjectManagerServerSSE(token: string, port: nu
         }
     });
 
-    app.listen(port, () => {
-        console.log(`MCP GitHub Project Manager server started on port ${port}`);
-    });
+    app.listen(port);
 
     // Keep the server running
     return server;
