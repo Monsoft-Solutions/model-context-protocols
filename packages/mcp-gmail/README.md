@@ -137,7 +137,7 @@ docker run -i --rm \
 
 The server provides the following tools that can be used through Claude Desktop:
 
-### 1. Send Email (`send_email`)
+### 1. Send Email (`gmail_send_email`)
 
 Sends a new email immediately.
 
@@ -151,7 +151,7 @@ Sends a new email immediately.
 }
 ```
 
-### 2. Draft Email (`draft_email`)
+### 2. Draft Email (`gmail_draft_email`)
 
 Creates a draft email without sending it.
 
@@ -164,7 +164,7 @@ Creates a draft email without sending it.
 }
 ```
 
-### 3. Read Email (`read_email`)
+### 3. Read Email (`gmail_read_email`)
 
 Retrieves the content of a specific email by its ID.
 
@@ -174,7 +174,7 @@ Retrieves the content of a specific email by its ID.
 }
 ```
 
-### 4. Search Emails (`search_emails`)
+### 4. Search Emails (`gmail_list_emails`)
 
 Searches for emails using Gmail search syntax.
 
@@ -185,7 +185,7 @@ Searches for emails using Gmail search syntax.
 }
 ```
 
-### 5. Modify Email (`modify_email`)
+### 5. Modify Email (`gmail_modify_email`)
 
 Adds or removes labels from emails (move to different folders, archive, etc.).
 
@@ -197,7 +197,7 @@ Adds or removes labels from emails (move to different folders, archive, etc.).
 }
 ```
 
-### 6. Delete Email (`delete_email`)
+### 6. Delete Email (`gmail_delete_email`)
 
 Permanently deletes an email.
 
@@ -207,7 +207,7 @@ Permanently deletes an email.
 }
 ```
 
-### 7. List Email Labels (`list_email_labels`)
+### 7. List Email Labels (`gmail_list_email_labels`)
 
 Retrieves all available Gmail labels.
 
@@ -215,7 +215,7 @@ Retrieves all available Gmail labels.
 {}
 ```
 
-### 8. Advanced Search Emails (`search_advanced_filters`)
+### 8. Advanced Search Emails (`gmail_list_emails_with_advanced_filters`)
 
 Searches for emails using structured filtering options instead of raw Gmail query syntax.
 

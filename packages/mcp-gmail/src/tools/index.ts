@@ -14,7 +14,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Send Email
     server.tool(
-        'send_email',
+        'gmail_send_email',
         {
             to: z.array(z.string()).describe('List of recipient email addresses'),
             subject: z.string().describe('Email subject'),
@@ -29,7 +29,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Draft Email
     server.tool(
-        'draft_email',
+        'gmail_draft_email',
         {
             to: z.array(z.string()).describe('List of recipient email addresses'),
             subject: z.string().describe('Email subject'),
@@ -44,7 +44,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Read Email
     server.tool(
-        'read_email',
+        'gmail_read_email',
         {
             messageId: z.string().describe('ID of the email message to retrieve'),
         },
@@ -55,7 +55,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Search Emails
     server.tool(
-        'list_emails',
+        'gmail_list_emails',
         {
             query: z.string().describe("Gmail search query (e.g., 'from:example@gmail.com')"),
             maxResults: z.number().optional().describe('Maximum number of results to return'),
@@ -67,7 +67,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Advanced Search Emails with Filters
     server.tool(
-        'list_emails_with_advanced_filters',
+        'gmail_list_emails_with_advanced_filters',
         {
             from: z.string().optional().describe('Filter emails from a specific sender'),
             to: z.string().optional().describe('Filter emails sent to a specific recipient'),
@@ -92,7 +92,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Modify Email
     server.tool(
-        'modify_email',
+        'gmail_modify_email',
         {
             messageId: z.string().describe('ID of the email message to modify'),
             labelIds: z.array(z.string()).optional().describe('List of label IDs to apply'),
@@ -111,7 +111,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Delete Email
     server.tool(
-        'delete_email',
+        'gmail_delete_email',
         {
             messageId: z.string().describe('ID of the email message to delete'),
         },
@@ -121,7 +121,7 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
     );
 
     // List Email Labels
-    server.tool('list_email_labels', {}, async () => {
+    server.tool('gmail_list_email_labels', {}, async () => {
         return await gmailTools.listEmailLabels();
     });
 }
