@@ -215,6 +215,38 @@ Retrieves all available Gmail labels.
 {}
 ```
 
+### 8. Advanced Search Emails (`search_advanced_filters`)
+
+Searches for emails using structured filtering options instead of raw Gmail query syntax.
+
+```json
+{
+    "from": "john@example.com",
+    "afterDate": "2024/01/01",
+    "beforeDate": "2024/03/31",
+    "hasAttachment": true,
+    "isRead": false,
+    "subject": "report",
+    "maxResults": 20
+}
+```
+
+Key filter parameters:
+
+- `from` - Filter by sender email address
+- `to` - Filter by recipient email address
+- `subject` - Search for text in the subject line
+- `afterDate` and `beforeDate` - Date range filters (format: YYYY/MM/DD)
+- `hasAttachment` - Filter emails with attachments
+- `isRead` - Filter by read/unread status
+- `isStarred` - Filter starred emails
+- `inFolder` - Filter by folder location (inbox, sent, trash, etc.)
+- `hasWords` - Filter emails containing specific words
+- `doesNotHaveWords` - Exclude emails containing specific words
+- `minSize` and `maxSize` - Filter by email size (in MB)
+- `labels` - Filter by specific Gmail labels
+- `maxResults` - Maximum number of results to return
+
 ## Advanced Search Syntax
 
 The `search_emails` tool supports Gmail's powerful search operators:
@@ -291,3 +323,48 @@ For support, feature requests, or bug reports, please open an issue on our [GitH
 ## About Monsoft Solutions
 
 [Monsoft Solutions](https://monsoftsolutions.com) is a software development company that specializes in creating AI-powered solutions and developer tools. We focus on building robust, scalable, and user-friendly applications that help developers and businesses leverage the power of artificial intelligence.
+
+## TODO: Additional Gmail Tools
+
+The following Gmail API tools are planned for future implementation:
+
+### Attachment Management
+
+- `download_attachment` - Download email attachments
+- `upload_attachment` - Add attachments to draft emails
+
+### Thread Management
+
+- `get_thread` - Retrieve an entire email conversation thread
+- `modify_thread` - Apply labels or actions to all emails in a thread
+
+### Draft Management
+
+- `update_draft` - Modify an existing draft email
+- `delete_draft` - Remove a draft email
+- `list_drafts` - Get all saved draft emails
+
+### Label Management
+
+- `create_label` - Create a new Gmail label
+- `update_label` - Modify an existing label
+- `delete_label` - Remove a custom label
+
+### Settings Management
+
+- `get_vacation_responder` - Get auto-reply settings
+- `set_vacation_responder` - Configure out-of-office responses
+- `get_forwarding` - Get email forwarding settings
+- `update_forwarding` - Modify email forwarding settings
+
+### Message Actions
+
+- `mark_as_read` - Mark messages as read
+- `mark_as_unread` - Mark messages as unread
+- `archive_email` - Move messages to archive
+- `move_to_trash` - Move messages to trash
+- `recover_from_trash` - Restore messages from trash
+
+### Advanced Search
+
+- `search_with_filters` - Search with complex criteria (date ranges, attachments, etc.)

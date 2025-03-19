@@ -55,13 +55,38 @@ export function registerTools(server: McpServer, oauth2Client: OAuth2Client): vo
 
     // Search Emails
     server.tool(
-        'search_emails',
+        'list_emails',
         {
             query: z.string().describe("Gmail search query (e.g., 'from:example@gmail.com')"),
             maxResults: z.number().optional().describe('Maximum number of results to return'),
         },
         async (params) => {
             return await gmailTools.searchEmails(params.query, params.maxResults);
+        },
+    );
+
+    // Advanced Search Emails with Filters
+    server.tool(
+        'list_emails_with_advanced_filters',
+        {
+            from: z.string().optional().describe('Filter emails from a specific sender'),
+            to: z.string().optional().describe('Filter emails sent to a specific recipient'),
+            subject: z.string().optional().describe('Filter by text in the subject line'),
+            afterDate: z.string().optional().describe('Filter emails after this date (format: YYYY/MM/DD)'),
+            beforeDate: z.string().optional().describe('Filter emails before this date (format: YYYY/MM/DD)'),
+            hasAttachment: z.boolean().optional().describe('Filter emails with attachments'),
+            isRead: z.boolean().optional().describe('Filter by read/unread status'),
+            isStarred: z.boolean().optional().describe('Filter starred emails'),
+            inFolder: z.string().optional().describe('Filter emails in a specific folder (e.g., inbox, sent, trash)'),
+            hasWords: z.string().optional().describe('Filter emails containing specific words'),
+            doesNotHaveWords: z.string().optional().describe('Filter out emails with specific words'),
+            minSize: z.number().optional().describe('Filter emails larger than this size (in MB)'),
+            maxSize: z.number().optional().describe('Filter emails smaller than this size (in MB)'),
+            labels: z.array(z.string()).optional().describe('Filter by specific labels'),
+            maxResults: z.number().optional().describe('Maximum number of results to return'),
+        },
+        async (params) => {
+            return await gmailTools.searchWithFilters(params);
         },
     );
 

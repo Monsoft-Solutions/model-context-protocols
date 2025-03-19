@@ -321,4 +321,114 @@ export class GmailTools {
             );
         }
     }
+
+    /**
+     * Search emails with advanced filtering options
+     *
+     * @param filters - Object containing various filter criteria
+     * @returns The search results
+     * @throws GmailApiError if the operation fails
+     */
+    async searchWithFilters(filters: {
+        from?: string;
+        to?: string;
+        subject?: string;
+        afterDate?: string;
+        beforeDate?: string;
+        hasAttachment?: boolean;
+        isRead?: boolean;
+        isStarred?: boolean;
+        inFolder?: string;
+        hasWords?: string;
+        doesNotHaveWords?: string;
+        minSize?: number;
+        maxSize?: number;
+        labels?: string[];
+        maxResults?: number;
+    }) {
+        try {
+            // Build Gmail search query based on provided filters
+            const queryParts: string[] = [];
+
+            // Sender filter
+            if (filters.from) {
+                queryParts.push(`from:${filters.from}`);
+            }
+
+            // Recipient filter
+            if (filters.to) {
+                queryParts.push(`to:${filters.to}`);
+            }
+
+            // Subject filter
+            if (filters.subject) {
+                queryParts.push(`subject:${filters.subject}`);
+            }
+
+            // Date range filters
+            if (filters.afterDate) {
+                queryParts.push(`after:${filters.afterDate}`);
+            }
+
+            if (filters.beforeDate) {
+                queryParts.push(`before:${filters.beforeDate}`);
+            }
+
+            // Attachment filter
+            if (filters.hasAttachment) {
+                queryParts.push('has:attachment');
+            }
+
+            // Read/unread status
+            if (filters.isRead !== undefined) {
+                queryParts.push(filters.isRead ? 'is:read' : 'is:unread');
+            }
+
+            // Starred status
+            if (filters.isStarred) {
+                queryParts.push('is:starred');
+            }
+
+            // Folder/location filter
+            if (filters.inFolder) {
+                queryParts.push(`in:${filters.inFolder}`);
+            }
+
+            // Content word filters
+            if (filters.hasWords) {
+                queryParts.push(filters.hasWords); // Simple word search doesn't need operator
+            }
+
+            // Negative content word filters
+            if (filters.doesNotHaveWords) {
+                queryParts.push(`-${filters.doesNotHaveWords}`);
+            }
+
+            // Size filters (convert to bytes)
+            if (filters.minSize) {
+                queryParts.push(`larger:${filters.minSize}m`); // Size in MB
+            }
+
+            if (filters.maxSize) {
+                queryParts.push(`smaller:${filters.maxSize}m`); // Size in MB
+            }
+
+            // Label filters
+            if (filters.labels && filters.labels.length > 0) {
+                filters.labels.forEach((label) => {
+                    queryParts.push(`label:${label}`);
+                });
+            }
+
+            // Join all query parts with spaces
+            const query = queryParts.join(' ');
+
+            // Use existing search emails method with the constructed query
+            return await this.searchEmails(query, filters.maxResults);
+        } catch (error) {
+            throw new GmailApiError(
+                `Failed to search emails with filters: ${error instanceof Error ? error.message : String(error)}`,
+            );
+        }
+    }
 }
