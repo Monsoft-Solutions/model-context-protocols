@@ -51,13 +51,47 @@ function registerDocumentGenerationTool(server: McpServer, token: string, aiProv
     server.tool(
         'generate-documentation',
         {
-            documentType: z.enum(['technical', 'database', 'uiux', 'audience', 'accessibility', 'api', 'all']),
-            projectName: z.string().min(1),
-            description: z.string().min(1),
-            additionalContext: z.string().optional(),
-            targetAudience: z.string().optional(),
-            implementationDetails: z.string().optional(),
-            integrationPoints: z.string().optional(),
+            documentType: z
+                .enum(['technical', 'database', 'uiux', 'audience', 'accessibility', 'api', 'all'])
+                .describe(
+                    'The type of documentation to generate. Choose from technical specs, database design, UI/UX guidelines, audience definition, accessibility requirements, API docs, or all types.',
+                ),
+            projectName: z
+                .string()
+                .min(1)
+                .describe(
+                    'The name of the project for which documentation is being generated. Will be used in titles and headers.',
+                ),
+            description: z
+                .string()
+                .min(1)
+                .describe(
+                    'A comprehensive description of the project or feature that requires documentation. This forms the basis of the generated content.',
+                ),
+            additionalContext: z
+                .string()
+                .optional()
+                .describe(
+                    'Optional background information, requirements, or constraints that would help in generating more accurate documentation.',
+                ),
+            targetAudience: z
+                .string()
+                .optional()
+                .describe(
+                    'Optional information about who will be reading this documentation, such as developers, project managers, designers, or end users.',
+                ),
+            implementationDetails: z
+                .string()
+                .optional()
+                .describe(
+                    'Optional technical specifics about how the feature/project is implemented, relevant technologies, patterns, or architecture.',
+                ),
+            integrationPoints: z
+                .string()
+                .optional()
+                .describe(
+                    'Optional information about how this component interacts with other systems, services, or parts of the application.',
+                ),
         },
         async (params) => {
             const result = await documentService.generateDocumentation({

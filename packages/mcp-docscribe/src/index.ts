@@ -13,11 +13,9 @@ export * from './errors/documentation-error.js';
 export * from './templates/prompt-templates.js';
 
 // Run CLI when invoked directly
-if (require.main === module) {
-    import('./config/cli.js').then(({ runCli }) => {
-        runCli().catch((err: Error) => {
-            console.error('Unexpected error:', err);
-            process.exit(1);
-        });
+import('./config/cli.js').then(({ runCli }) => {
+    runCli().catch((err: Error) => {
+        console.error('Unexpected error:', err);
+        process.exit(1);
     });
-}
+});
