@@ -112,7 +112,85 @@ Posts a new message to a Slack channel.
 }
 ```
 
-### 3. Reply to Thread (`slack_reply_to_thread`)
+### 3. Post Rich Message (`slack_post_rich_message`)
+
+Posts a message with attachments and/or blocks to a Slack channel for rich formatting.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "text": "Hello from Claude! This message has rich formatting.",
+    "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "Important Announcement"
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Hello from *Claude*! Here's some _formatted text_."
+            }
+        }
+    ],
+    "attachments": [
+        {
+            "color": "#36a64f",
+            "title": "Attachment Title",
+            "text": "Optional text for the attachment"
+        }
+    ]
+}
+```
+
+### 4. Update Message (`slack_update_message`)
+
+Updates an existing message in a Slack channel.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "timestamp": "1647357967.655841",
+    "text": "Updated message text"
+}
+```
+
+### 5. Delete Message (`slack_delete_message`)
+
+Deletes an existing message from a Slack channel.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "timestamp": "1647357967.655841"
+}
+```
+
+### 6. Schedule Message (`slack_schedule_message`)
+
+Schedules a message for future delivery to a Slack channel.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "text": "This message was scheduled in advance!",
+    "post_at": 1719417600,
+    "blocks": [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Scheduled message with formatting!"
+            }
+        }
+    ]
+}
+```
+
+### 7. Reply to Thread (`slack_reply_to_thread`)
 
 Replies to an existing message thread.
 
@@ -124,7 +202,7 @@ Replies to an existing message thread.
 }
 ```
 
-### 4. Add Reaction (`slack_add_reaction`)
+### 8. Add Reaction (`slack_add_reaction`)
 
 Adds an emoji reaction to a message.
 
@@ -136,7 +214,7 @@ Adds an emoji reaction to a message.
 }
 ```
 
-### 5. Get Channel History (`slack_get_channel_history`)
+### 9. Get Channel History (`slack_get_channel_history`)
 
 Retrieves recent messages from a channel.
 
@@ -147,7 +225,7 @@ Retrieves recent messages from a channel.
 }
 ```
 
-### 6. Get Thread Replies (`slack_get_thread_replies`)
+### 10. Get Thread Replies (`slack_get_thread_replies`)
 
 Gets all replies in a message thread.
 
@@ -158,7 +236,7 @@ Gets all replies in a message thread.
 }
 ```
 
-### 7. Get Users (`slack_get_users`)
+### 11. Get Users (`slack_get_users`)
 
 Lists workspace users with basic profile information.
 
@@ -169,7 +247,7 @@ Lists workspace users with basic profile information.
 }
 ```
 
-### 8. Get User Profile (`slack_get_user_profile`)
+### 12. Get User Profile (`slack_get_user_profile`)
 
 Gets detailed profile information for a specific user.
 
@@ -246,14 +324,14 @@ For support, feature requests, or bug reports, please open an issue on our [GitH
 
 ## Future Enhancements
 
-The following Slack API tools are planned for future implementation:
+We've implemented the following message management features:
 
-### Message Management
+✅ Post messages with attachments and blocks
+✅ Update existing messages
+✅ Delete messages
+✅ Schedule messages for future delivery
 
-- Post messages with attachments and blocks
-- Update existing messages
-- Delete messages
-- Schedule messages for future delivery
+Additional features planned for future implementation:
 
 ### Channel Management
 

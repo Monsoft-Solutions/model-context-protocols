@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { WebClient } from '@slack/web-api';
+import { WebClient, Block, KnownBlock } from '@slack/web-api';
 import { z } from 'zod';
 import { ChannelOperationsTool } from './channel-operations.js';
 import { MessageOperationsTool } from './message-operations.js';
@@ -54,6 +54,79 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
         },
         async (params) => {
             return await messageOperations.postMessage(params.channel_id, params.text);
+        },
+    );
+
+    // Post Rich Message with Blocks and/or Attachments
+    server.tool(
+        'slack_post_rich_message',
+        {
+            channel_id: z.string().describe('The ID of the channel to post to'),
+            text: z.string().describe('The fallback text for the message'),
+            blocks: z.array(z.record(z.any())).optional().describe('Layout blocks for rich formatting'),
+            attachments: z.array(z.record(z.any())).optional().describe('Attachments for the message'),
+        },
+        async (params) => {
+            return await messageOperations.postRichMessage(
+                params.channel_id,
+                params.text,
+                params.blocks as Array<Block | KnownBlock> | undefined,
+                params.attachments,
+            );
+        },
+    );
+
+    // Update Message
+    server.tool(
+        'slack_update_message',
+        {
+            channel_id: z.string().describe('The channel containing the message'),
+            timestamp: z.string().describe('Timestamp of the message to update'),
+            text: z.string().describe('New text for the message'),
+            blocks: z.array(z.record(z.any())).optional().describe('New blocks for the message'),
+            attachments: z.array(z.record(z.any())).optional().describe('New attachments for the message'),
+        },
+        async (params) => {
+            return await messageOperations.updateMessage(
+                params.channel_id,
+                params.timestamp,
+                params.text,
+                params.blocks as Array<Block | KnownBlock> | undefined,
+                params.attachments,
+            );
+        },
+    );
+
+    // Delete Message
+    server.tool(
+        'slack_delete_message',
+        {
+            channel_id: z.string().describe('The channel containing the message'),
+            timestamp: z.string().describe('Timestamp of the message to delete'),
+        },
+        async (params) => {
+            return await messageOperations.deleteMessage(params.channel_id, params.timestamp);
+        },
+    );
+
+    // Schedule Message
+    server.tool(
+        'slack_schedule_message',
+        {
+            channel_id: z.string().describe('The ID of the channel to post to'),
+            text: z.string().describe('The message text to post'),
+            post_at: z.number().describe('Unix timestamp for when message should be sent'),
+            blocks: z.array(z.record(z.any())).optional().describe('Layout blocks for rich formatting'),
+            attachments: z.array(z.record(z.any())).optional().describe('Attachments for the message'),
+        },
+        async (params) => {
+            return await messageOperations.scheduleMessage(
+                params.channel_id,
+                params.text,
+                params.post_at,
+                params.blocks as Array<Block | KnownBlock> | undefined,
+                params.attachments,
+            );
         },
     );
 
