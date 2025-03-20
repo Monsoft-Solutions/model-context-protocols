@@ -38,6 +38,11 @@ A Model Context Protocol (MCP) server for Slack integration in Claude Desktop. T
     - `channels:history` - View messages and other content in public channels
     - `channels:read` - View basic channel information
     - `chat:write` - Send messages as the app
+    - `chat:write.customize` - Post rich messages with attachments and blocks
+    - `chat:write.public` - Post in public channels without being invited
+    - `chat:update` - Update messages
+    - `chat:delete` - Delete messages
+    - `chat:schedule` - Schedule messages
     - `reactions:write` - Add emoji reactions to messages
     - `users:read` - View users and their basic information
 
