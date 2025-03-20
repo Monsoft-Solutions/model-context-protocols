@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { ChannelOperationsTool } from './channel-operations.js';
 import { MessageOperationsTool } from './message-operations.js';
 import { UserOperationsTool } from './user-operations.js';
+import { FileOperationsTool } from './file-operations.js';
+import { FileType, FileTypeEnum } from '../types/file-type.js';
 
 /**
  * Register Slack tools with the MCP server
@@ -16,6 +18,7 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
     const channelOperations = new ChannelOperationsTool(slackClient, teamId);
     const messageOperations = new MessageOperationsTool(slackClient, teamId);
     const userOperations = new UserOperationsTool(slackClient, teamId);
+    const fileOperations = new FileOperationsTool(slackClient, teamId);
 
     // Channel Operations
 
@@ -220,6 +223,140 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
         },
         async (params) => {
             return await userOperations.getUserProfile(params.user_id);
+        },
+    );
+
+    // File Operations
+
+    // Upload File
+    server.tool(
+        'slack_upload_file',
+        {
+            file_path: z.string().describe('Local file path to upload'),
+            file_name: z
+                .string()
+                .optional()
+                .describe('Name to use for the file in Slack (defaults to filename from path if not provided)'),
+            channel_id: z.string().optional().describe('Channel ID to share the file with'),
+            file_type: FileTypeEnum.optional().describe(
+                'File type identifier (e.g., pdf, jpg, docx). Use "auto" to let Slack detect the file type automatically.',
+            ),
+            title: z.string().optional().describe('Title for the file (defaults to filename if not provided)'),
+            initial_comment: z.string().optional().describe('Initial comment to include with the file when sharing'),
+        },
+        async (params) => {
+            return await fileOperations.uploadFile(
+                params.file_path,
+                params.file_name,
+                params.channel_id,
+                params.file_type as FileType,
+                params.title,
+                params.initial_comment,
+            );
+        },
+    );
+
+    // Upload File Content
+    server.tool(
+        'slack_upload_file_content',
+        {
+            content: z.string().describe('Content to upload as a file (text content)'),
+            file_name: z.string().describe('Name for the file including extension (e.g., "report.txt")'),
+            channel_id: z.string().optional().describe('Channel ID to share the file with'),
+            file_type: FileTypeEnum.optional().describe(
+                'File type identifier (e.g., "text", "markdown", "html"). Common types include: "text", "pdf", "csv", "markdown".',
+            ),
+            title: z.string().optional().describe('Title for the file (defaults to file_name if not provided)'),
+            initial_comment: z.string().optional().describe('Initial comment to include with the file when sharing'),
+        },
+        async (params) => {
+            return await fileOperations.uploadFileContent(
+                params.content,
+                params.file_name,
+                params.channel_id,
+                params.file_type as FileType,
+                params.title,
+                params.initial_comment,
+            );
+        },
+    );
+
+    // Get File Info
+    server.tool(
+        'slack_get_file_info',
+        {
+            file_id: z.string().describe('The ID of the file to get information about (starts with "F")'),
+        },
+        async (params) => {
+            return await fileOperations.getFileInfo(params.file_id);
+        },
+    );
+
+    // Share File
+    server.tool(
+        'slack_share_file',
+        {
+            file_id: z.string().describe('The ID of the file to share (starts with "F")'),
+            channel_id: z.string().describe('The channel ID to share the file in (starts with "C")'),
+        },
+        async (params) => {
+            return await fileOperations.shareFile(params.file_id, params.channel_id);
+        },
+    );
+
+    // Enable Public URL
+    server.tool(
+        'slack_enable_public_url',
+        {
+            file_id: z
+                .string()
+                .describe('The ID of the file to make public (starts with "F") - creates a publicly accessible URL'),
+        },
+        async (params) => {
+            return await fileOperations.enablePublicURL(params.file_id);
+        },
+    );
+
+    // Disable Public URL
+    server.tool(
+        'slack_disable_public_url',
+        {
+            file_id: z
+                .string()
+                .describe('The ID of the file to make private (starts with "F") - revokes the public URL'),
+        },
+        async (params) => {
+            return await fileOperations.disablePublicURL(params.file_id);
+        },
+    );
+
+    // List Files
+    server.tool(
+        'slack_list_files',
+        {
+            channel_id: z
+                .string()
+                .optional()
+                .describe('Channel ID to filter files by (only returns files shared in this channel)'),
+            user_id: z
+                .string()
+                .optional()
+                .describe('User ID to filter files by (only returns files uploaded by this user)'),
+            limit: z.number().optional().describe('Maximum number of files to return (default: 10, max: 100)'),
+        },
+        async (params) => {
+            return await fileOperations.listFiles(params.channel_id, params.user_id, params.limit);
+        },
+    );
+
+    // Delete File
+    server.tool(
+        'slack_delete_file',
+        {
+            file_id: z.string().describe('The ID of the file to delete (starts with "F") - this action is permanent'),
+        },
+        async (params) => {
+            return await fileOperations.deleteFile(params.file_id);
         },
     );
 }

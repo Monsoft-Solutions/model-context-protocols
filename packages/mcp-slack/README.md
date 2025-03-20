@@ -45,6 +45,11 @@ A Model Context Protocol (MCP) server for Slack integration in Claude Desktop. T
     - `chat:schedule` - Schedule messages
     - `reactions:write` - Add emoji reactions to messages
     - `users:read` - View users and their basic information
+    - `files:read` - View files shared in channels
+    - `files:write` - Upload, edit, and delete files
+    - `remote_files:read` - View remote files
+    - `remote_files:write` - Add, edit, and delete remote files
+    - `remote_files:share` - Share remote files
 
 3. Install App to Workspace:
 
@@ -95,36 +100,51 @@ Coming soon.
 
 The server provides the following tools that can be used through Claude Desktop:
 
-### 1. List Channels (`slack_list_channels`)
+### Channel Operations
 
-Lists public channels in the workspace with pagination support.
+#### 1. List Channels (`slack_list_channels`)
+
+Retrieves a list of channels in the workspace.
 
 ```json
 {
     "limit": 50,
-    "cursor": "dXNlcjpVMDYxTkZUUjI="
+    "cursor": "dXNlcjpVMDYxTkZUVDI="
 }
 ```
 
-### 2. Post Message (`slack_post_message`)
+#### 2. Get Channel History (`slack_get_channel_history`)
 
-Posts a new message to a Slack channel.
+Retrieves recent messages from a channel.
 
 ```json
 {
     "channel_id": "C01234ABCD",
-    "text": "Hello from Claude! This message was sent through the Slack MCP."
+    "limit": 20
 }
 ```
 
-### 3. Post Rich Message (`slack_post_rich_message`)
+### Message Operations
 
-Posts a message with attachments and/or blocks to a Slack channel for rich formatting.
+#### 1. Post Message (`slack_post_message`)
+
+Sends a simple text message to a Slack channel.
 
 ```json
 {
     "channel_id": "C01234ABCD",
-    "text": "Hello from Claude! This message has rich formatting.",
+    "text": "Hello from Claude!"
+}
+```
+
+#### 2. Post Rich Message (`slack_post_rich_message`)
+
+Sends a message with blocks and/or attachments for rich formatting.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "text": "Backup message for clients that don't support blocks",
     "blocks": [
         {
             "type": "header",
@@ -137,35 +157,55 @@ Posts a message with attachments and/or blocks to a Slack channel for rich forma
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Hello from *Claude*! Here's some _formatted text_."
+                "text": "Hello! This is a *rich message* with formatting."
             }
         }
     ],
     "attachments": [
         {
             "color": "#36a64f",
-            "title": "Attachment Title",
-            "text": "Optional text for the attachment"
+            "title": "Task Status",
+            "fields": [
+                {
+                    "title": "Project",
+                    "value": "AI Assistant",
+                    "short": true
+                },
+                {
+                    "title": "Status",
+                    "value": "In Progress",
+                    "short": true
+                }
+            ]
         }
     ]
 }
 ```
 
-### 4. Update Message (`slack_update_message`)
+#### 3. Update Message (`slack_update_message`)
 
-Updates an existing message in a Slack channel.
+Updates an existing message.
 
 ```json
 {
     "channel_id": "C01234ABCD",
     "timestamp": "1647357967.655841",
-    "text": "Updated message text"
+    "text": "Updated message text",
+    "blocks": [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "This message has been updated."
+            }
+        }
+    ]
 }
 ```
 
-### 5. Delete Message (`slack_delete_message`)
+#### 4. Delete Message (`slack_delete_message`)
 
-Deletes an existing message from a Slack channel.
+Deletes a message.
 
 ```json
 {
@@ -174,28 +214,37 @@ Deletes an existing message from a Slack channel.
 }
 ```
 
-### 6. Schedule Message (`slack_schedule_message`)
+#### 5. Schedule Message (`slack_schedule_message`)
 
-Schedules a message for future delivery to a Slack channel.
+Schedules a message to be sent at a future time.
 
 ```json
 {
     "channel_id": "C01234ABCD",
-    "text": "This message was scheduled in advance!",
-    "post_at": 1719417600,
+    "text": "This is a scheduled message",
+    "post_at": 1701385200,
     "blocks": [
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "Scheduled message with formatting!"
+                "text": "This message was *scheduled* to be sent automatically."
             }
+        },
+        {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": "Scheduled by Claude"
+                }
+            ]
         }
     ]
 }
 ```
 
-### 7. Reply to Thread (`slack_reply_to_thread`)
+#### 6. Reply to Thread (`slack_reply_to_thread`)
 
 Replies to an existing message thread.
 
@@ -207,7 +256,7 @@ Replies to an existing message thread.
 }
 ```
 
-### 8. Add Reaction (`slack_add_reaction`)
+#### 7. Add Reaction (`slack_add_reaction`)
 
 Adds an emoji reaction to a message.
 
@@ -219,20 +268,9 @@ Adds an emoji reaction to a message.
 }
 ```
 
-### 9. Get Channel History (`slack_get_channel_history`)
+#### 8. Get Thread Replies (`slack_get_thread_replies`)
 
-Retrieves recent messages from a channel.
-
-```json
-{
-    "channel_id": "C01234ABCD",
-    "limit": 20
-}
-```
-
-### 10. Get Thread Replies (`slack_get_thread_replies`)
-
-Gets all replies in a message thread.
+Retrieves all replies in a thread.
 
 ```json
 {
@@ -241,24 +279,121 @@ Gets all replies in a message thread.
 }
 ```
 
-### 11. Get Users (`slack_get_users`)
+### User Operations
 
-Lists workspace users with basic profile information.
+#### 1. Get Users (`slack_get_users`)
+
+Lists users in the workspace.
 
 ```json
 {
-    "limit": 50,
-    "cursor": "dXNlcjpVMDYxTkZUUjI="
+    "limit": 100,
+    "cursor": "dXNlcjpVMDYxTkZUVDI="
 }
 ```
 
-### 12. Get User Profile (`slack_get_user_profile`)
+#### 2. Get User Profile (`slack_get_user_profile`)
 
-Gets detailed profile information for a specific user.
+Gets detailed information about a specific user.
 
 ```json
 {
-    "user_id": "U061NFTR2"
+    "user_id": "U01234ABCD"
+}
+```
+
+### File Operations
+
+#### 1. Upload File (`slack_upload_file`)
+
+Uploads a file from a local path to Slack.
+
+```json
+{
+    "file_path": "/path/to/document.pdf",
+    "file_name": "Important Document.pdf",
+    "channel_id": "C01234ABCD",
+    "file_type": "pdf",
+    "title": "Q4 Report",
+    "initial_comment": "Here's the latest quarterly report."
+}
+```
+
+#### 2. Upload File Content (`slack_upload_file_content`)
+
+Uploads string content as a file to Slack.
+
+```json
+{
+    "content": "This is the content of the file that will be created in Slack.",
+    "file_name": "notes.txt",
+    "channel_id": "C01234ABCD",
+    "file_type": "text",
+    "title": "Meeting Notes",
+    "initial_comment": "Notes from today's meeting."
+}
+```
+
+#### 3. Get File Info (`slack_get_file_info`)
+
+Retrieves information about a specific file.
+
+```json
+{
+    "file_id": "F01234ABCD"
+}
+```
+
+#### 4. Share File (`slack_share_file`)
+
+Shares an existing file to a channel.
+
+```json
+{
+    "file_id": "F01234ABCD",
+    "channel_id": "C01234ABCD"
+}
+```
+
+#### 5. Enable Public URL (`slack_enable_public_url`)
+
+Enables a public URL for a file.
+
+```json
+{
+    "file_id": "F01234ABCD"
+}
+```
+
+#### 6. Disable Public URL (`slack_disable_public_url`)
+
+Disables the public URL for a file.
+
+```json
+{
+    "file_id": "F01234ABCD"
+}
+```
+
+#### 7. List Files (`slack_list_files`)
+
+Lists files visible to the user, with optional filtering.
+
+```json
+{
+    "channel_id": "C01234ABCD",
+    "user_id": "U01234ABCD",
+    "limit": 25
+}
+```
+
+#### 8. Delete File (`slack_delete_file`)
+
+Deletes a file from Slack.
+
+```json
+{
+    "file_id": "F01234ABCD"
 }
 ```
 
@@ -335,6 +470,11 @@ We've implemented the following message management features:
 ✅ Update existing messages
 ✅ Delete messages
 ✅ Schedule messages for future delivery
+✅ Upload files to Slack
+✅ Get file information
+✅ Share files in channels
+✅ Enable/disable public file URLs
+✅ List and delete files
 
 Additional features planned for future implementation:
 
@@ -351,9 +491,9 @@ Additional features planned for future implementation:
 - Update user profile information
 - Manage user groups
 
-### File Operations
+## Development
 
-- Upload files to Slack
-- Get file information
-- Share files in channels
-- Download files
+### Prerequisites
+
+- Node.js 18 or higher
+- npm or yarn
