@@ -1,5 +1,11 @@
 # @monsoft/mcp-slack
 
+## 0.4.0
+
+### Minor Changes
+
+- a55f400: Implement Slack File Operations Tools
+
 ## 0.3.0
 
 ### Minor Changes
