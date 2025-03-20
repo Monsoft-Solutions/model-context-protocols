@@ -63,8 +63,18 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
         {
             channel_id: z.string().describe('The ID of the channel to post to'),
             text: z.string().describe('The fallback text for the message'),
-            blocks: z.array(z.record(z.any())).optional().describe('Layout blocks for rich formatting'),
-            attachments: z.array(z.record(z.any())).optional().describe('Attachments for the message'),
+            blocks: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'Layout blocks for rich formatting (Section, Header, Divider, Image, Context blocks). Example: [{"type":"header","text":{"type":"plain_text","text":"Title"}},{"type":"section","text":{"type":"mrkdwn","text":"Hello *world*"}}]',
+                ),
+            attachments: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'Attachments for the message with colored sidebars, fields, etc. Example: [{"color":"#36a64f","title":"Title","fields":[{"title":"Priority","value":"High","short":true}]}]',
+                ),
         },
         async (params) => {
             return await messageOperations.postRichMessage(
@@ -83,8 +93,18 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
             channel_id: z.string().describe('The channel containing the message'),
             timestamp: z.string().describe('Timestamp of the message to update'),
             text: z.string().describe('New text for the message'),
-            blocks: z.array(z.record(z.any())).optional().describe('New blocks for the message'),
-            attachments: z.array(z.record(z.any())).optional().describe('New attachments for the message'),
+            blocks: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'New blocks for the message, replacing any existing ones. Example: [{"type":"header","text":{"type":"plain_text","text":"Updated Title"}},{"type":"section","text":{"type":"mrkdwn","text":"Updated content with *formatting*"}}]',
+                ),
+            attachments: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'New attachments for the message, replacing any existing ones. Example: [{"color":"#36a64f","title":"Updated Status","fields":[{"title":"Status","value":"Completed","short":true}]}]',
+                ),
         },
         async (params) => {
             return await messageOperations.updateMessage(
@@ -115,9 +135,19 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
         {
             channel_id: z.string().describe('The ID of the channel to post to'),
             text: z.string().describe('The message text to post'),
-            post_at: z.number().describe('Unix timestamp for when message should be sent'),
-            blocks: z.array(z.record(z.any())).optional().describe('Layout blocks for rich formatting'),
-            attachments: z.array(z.record(z.any())).optional().describe('Attachments for the message'),
+            post_at: z.number().describe('Unix timestamp for when message should be sent (seconds since epoch)'),
+            blocks: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'Layout blocks for rich formatting. Example: [{"type":"header","text":{"type":"plain_text","text":"Scheduled Announcement"}},{"type":"section","text":{"type":"mrkdwn","text":"This message was scheduled to appear at a specific time"}}]',
+                ),
+            attachments: z
+                .array(z.record(z.any()))
+                .optional()
+                .describe(
+                    'Attachments for the message. Example: [{"color":"#36a64f","title":"Event Details","fields":[{"title":"Event","value":"Team Meeting","short":true},{"title":"Location","value":"Conference Room","short":true}]}]',
+                ),
         },
         async (params) => {
             return await messageOperations.scheduleMessage(
