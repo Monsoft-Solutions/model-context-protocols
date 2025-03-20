@@ -1,6 +1,6 @@
 {
   "name": "@monsoft/mcp-slack",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Slack MCP Server for Model Context Protocol",
   "license": "MIT",
   "author": "Monsoft Solutions (https://monsoftsolutions.com)",

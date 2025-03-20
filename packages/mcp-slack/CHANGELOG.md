@@ -1,5 +1,11 @@
 # @monsoft/mcp-slack
 
+## 0.3.0
+
+### Minor Changes
+
+- 05d228a: Enhance message operations with rich posting, updating, deletion, and scheduling
+
 ## 0.2.0
 
 ### Minor Changes
