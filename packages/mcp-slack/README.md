@@ -37,6 +37,8 @@ A Model Context Protocol (MCP) server for Slack integration in Claude Desktop. T
 
     - `channels:history` - View messages and other content in public channels
     - `channels:read` - View basic channel information
+    - `channels:manage` - Create, archive, and unarchive channels
+    - `channels:write` - Manage channel memberships (invite users)
     - `chat:write` - Send messages as the app
     - `chat:write.customize` - Post rich messages with attachments and blocks
     - `chat:write.public` - Post in public channels without being invited
@@ -466,24 +468,24 @@ For support, feature requests, or bug reports, please open an issue on our [GitH
 
 We've implemented the following message management features:
 
-✅ Post messages with attachments and blocks
-✅ Update existing messages
-✅ Delete messages
-✅ Schedule messages for future delivery
-✅ Upload files to Slack
-✅ Get file information
-✅ Share files in channels
-✅ Enable/disable public file URLs
-✅ List and delete files
+- ✅ Post messages with attachments and blocks
+- ✅ Update existing messages
+- ✅ Delete messages
+- ✅ Schedule messages for future delivery
+- ✅ Upload files to Slack
+- ✅ Get file information
+- ✅ Share files in channels
+- ✅ Enable/disable public file URLs
+- ✅ List and delete files
 
 Additional features planned for future implementation:
 
 ### Channel Management
 
-- Create new channels
-- Archive/unarchive channels
-- Invite users to channels
-- Get channel information
+- ✅ Create new channels
+- ✅ Archive/unarchive channels
+- ✅ Invite users to channels
+- ✅ Get channel information
 
 ### User Management
 

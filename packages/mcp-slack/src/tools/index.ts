@@ -46,6 +46,66 @@ export function registerTools(server: McpServer, slackClient: WebClient, teamId:
         },
     );
 
+    // Create Channel
+    server.tool(
+        'slack_create_channel',
+        {
+            name: z
+                .string()
+                .describe('Channel name (lowercase, no spaces/special chars except hyphens and underscores)'),
+            is_private: z.boolean().describe('Whether to create a private channel'),
+            description: z.string().optional().describe('Optional initial description/purpose for the channel'),
+        },
+        async (params) => {
+            return await channelOperations.createChannel(params.name, params.is_private, params.description);
+        },
+    );
+
+    // Archive Channel
+    server.tool(
+        'slack_archive_channel',
+        {
+            channel_id: z.string().describe('The channel ID to archive'),
+        },
+        async (params) => {
+            return await channelOperations.archiveChannel(params.channel_id);
+        },
+    );
+
+    // Unarchive Channel
+    server.tool(
+        'slack_unarchive_channel',
+        {
+            channel_id: z.string().describe('The channel ID to unarchive'),
+        },
+        async (params) => {
+            return await channelOperations.unarchiveChannel(params.channel_id);
+        },
+    );
+
+    // Invite to Channel
+    server.tool(
+        'slack_invite_to_channel',
+        {
+            channel_id: z.string().describe('The channel ID'),
+            user_ids: z.array(z.string()).describe('Array of user IDs to invite'),
+        },
+        async (params) => {
+            return await channelOperations.inviteToChannel(params.channel_id, params.user_ids);
+        },
+    );
+
+    // Get Channel Info
+    server.tool(
+        'slack_get_channel_info',
+        {
+            channel_id: z.string().describe('The channel ID'),
+        },
+        async (params) => {
+            return await channelOperations.getChannelInfo(params.channel_id);
+        },
+    );
+
     // Message Operations
 
     // Post Message
