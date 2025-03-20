@@ -1,5 +1,11 @@
 # @monsoft/mcp-slack
 
+## 0.5.0
+
+### Minor Changes
+
+- 79b7b6c: Implement Slack Channel Management Features
+
 ## 0.4.0
 
 ### Minor Changes
