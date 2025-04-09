@@ -1,5 +1,11 @@
 # @monsoft/mcp-postgres
 
+## 0.5.0
+
+### Minor Changes
+
+- 88696d3: add resource registration for PostgreSQL tables and details
+
 ## 0.4.0
 
 ### Minor Changes
