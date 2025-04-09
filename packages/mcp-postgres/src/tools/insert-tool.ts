@@ -119,14 +119,10 @@ export class InsertTool {
      * @returns Query result
      */
     async insertData(table: string, data: Record<string, any>[], returnFields: string[] = []): Promise<any> {
-        let result: any;
-
         try {
-            // Begin transaction
-            await this.dbService.query('BEGIN');
-
-            // Generate INSERT query for each record
-            for (const record of data) {
+            // For single insert, we don't need a transaction
+            if (data.length === 1) {
+                const record = data[0];
                 const columns = Object.keys(record);
                 const values = Object.values(record);
                 const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
@@ -139,17 +135,13 @@ export class InsertTool {
                     query += ` RETURNING ${returnFields.join(', ')}`;
                 }
 
-                result = await this.dbService.query(query, values);
+                return await this.dbService.query(query, values);
             }
 
-            // Commit transaction
-            await this.dbService.query('COMMIT');
-
-            return result;
+            // For multiple inserts, use batch insert instead of individual transactions
+            // This is more efficient and avoids transaction issues
+            return await this.batchInsertData(table, data, returnFields);
         } catch (error: any) {
-            // Rollback transaction
-            await this.dbService.query('ROLLBACK');
-
             throw new DatabaseError(
                 error.message || 'Failed to insert data',
                 error.code || 'UNKNOWN_ERROR',
@@ -215,9 +207,6 @@ export class InsertTool {
 
             return result;
         } catch (error: any) {
-            // Rollback transaction
-            await this.dbService.query('ROLLBACK');
-
             throw new DatabaseError(
                 error.message || 'Failed to batch insert data',
                 error.code || 'UNKNOWN_ERROR',
