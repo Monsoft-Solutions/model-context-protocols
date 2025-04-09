@@ -57,8 +57,6 @@ export function loadEnv(): Env {
         PORT: argv.port || (process.env.PORT ? parseInt(process.env.PORT, 10) : undefined),
     };
 
-    console.log('envData', envData);
-
     try {
         return envSchema.parse(envData);
     } catch (error) {

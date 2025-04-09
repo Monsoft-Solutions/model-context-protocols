@@ -97,9 +97,7 @@ export async function startPostgresMcpServerSSE(
     });
 
     // Start the HTTP server
-    const httpServer = app.listen(port, () => {
-        console.log(`SSE server listening on port ${port}`);
-    });
+    const httpServer = app.listen(port);
 
     // Handle cleanup when the process is terminated
     process.on('SIGINT', async () => {
@@ -125,17 +123,13 @@ export async function startServer(): Promise<void> {
         // Load environment from command line or env vars
         const env = loadEnv();
 
-        console.log(`Environment parsed and loaded`);
-
         // Start server with appropriate transport based on configuration
         if (env.RUN_SSE) {
-            console.log(`Starting server with SSE transport on port ${env.PORT}`);
             await startPostgresMcpServerSSE(env.PORT, {
                 connectionString: env.POSTGRES_CONNECTION_STRING,
                 ssl: true, // Default to secure connections
             });
         } else {
-            console.log('Starting server with stdio transport');
             await startPostgresMcpServer({
                 connectionString: env.POSTGRES_CONNECTION_STRING,
                 ssl: true, // Default to secure connections
