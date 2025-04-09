@@ -116,6 +116,124 @@ export class DatabaseService {
     }
 
     /**
+     * Get detailed information about a specific table
+     * @param tableName Name of the table
+     * @param options Options for including additional details
+     * @returns Table structure details including columns and optionally constraints and indexes
+     */
+    async getTableDetails(
+        tableName: string,
+        options: { includeConstraints?: boolean; includeIndexes?: boolean } = {},
+    ): Promise<any> {
+        const { includeConstraints = true, includeIndexes = true } = options;
+
+        try {
+            // Get table columns
+            const columnsQuery = `
+                SELECT 
+                    column_name, 
+                    data_type, 
+                    character_maximum_length,
+                    is_nullable,
+                    column_default,
+                    ordinal_position
+                FROM 
+                    information_schema.columns 
+                WHERE 
+                    table_schema = 'public' AND 
+                    table_name = $1
+                ORDER BY 
+                    ordinal_position
+            `;
+
+            const columnsResult = await this.query(columnsQuery, [tableName]);
+
+            // Check if table exists
+            if (columnsResult.rows.length === 0) {
+                throw new DatabaseError(`Table '${tableName}' not found`, 'TABLE_NOT_FOUND', '');
+            }
+
+            const tableDetails: any = {
+                name: tableName,
+                columns: columnsResult.rows,
+            };
+
+            // Get constraint info
+            if (includeConstraints) {
+                const constraintsQuery = `
+                    SELECT 
+                        con.conname as constraint_name,
+                        con.contype as constraint_type,
+                        CASE 
+                            WHEN con.contype = 'p' THEN 'PRIMARY KEY'
+                            WHEN con.contype = 'f' THEN 'FOREIGN KEY'
+                            WHEN con.contype = 'u' THEN 'UNIQUE'
+                            WHEN con.contype = 'c' THEN 'CHECK'
+                            ELSE con.contype::text
+                        END as constraint_type_desc,
+                        array_agg(att.attname) as column_names,
+                        CASE 
+                            WHEN con.contype = 'f' THEN (
+                                SELECT relname FROM pg_class WHERE oid = con.confrelid
+                            )
+                            ELSE NULL
+                        END as referenced_table
+                    FROM 
+                        pg_constraint con
+                        JOIN pg_class rel ON rel.oid = con.conrelid
+                        JOIN pg_namespace nsp ON nsp.oid = rel.relnamespace
+                        JOIN pg_attribute att ON att.attrelid = con.conrelid AND att.attnum = ANY(con.conkey)
+                    WHERE 
+                        nsp.nspname = 'public' AND
+                        rel.relname = $1
+                    GROUP BY 
+                        con.conname, con.contype, con.confrelid
+                    ORDER BY 
+                        con.contype, con.conname
+                `;
+
+                const constraintsResult = await this.query(constraintsQuery, [tableName]);
+                tableDetails.constraints = constraintsResult.rows;
+            }
+
+            // Get index info
+            if (includeIndexes) {
+                const indexesQuery = `
+                    SELECT 
+                        idx.indexname as index_name,
+                        idx.indexdef as index_definition,
+                        CASE 
+                            WHEN idx.indexdef LIKE '%UNIQUE INDEX%' THEN true
+                            ELSE false
+                        END as is_unique
+                    FROM 
+                        pg_indexes idx
+                    WHERE 
+                        idx.schemaname = 'public' AND
+                        idx.tablename = $1
+                    ORDER BY 
+                        idx.indexname
+                `;
+
+                const indexesResult = await this.query(indexesQuery, [tableName]);
+                tableDetails.indexes = indexesResult.rows;
+            }
+
+            return tableDetails;
+        } catch (error: any) {
+            if (error instanceof DatabaseError) {
+                throw error;
+            }
+
+            throw new DatabaseError(
+                error.message || `Failed to get details for table '${tableName}'`,
+                error.code || 'UNKNOWN_ERROR',
+                error.detail || '',
+            );
+        }
+    }
+
+    /**
      * Close all database connections
      */
     async close(): Promise<void> {

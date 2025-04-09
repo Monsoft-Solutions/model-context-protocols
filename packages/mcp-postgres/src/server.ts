@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import express from 'express';
 import { registerTools } from './tools/index.js';
+import { registerResources } from './resources/index.js';
 import { loadEnv, type Env } from './config/env.js';
 import { DatabaseService } from './services/database-service.js';
 
@@ -11,10 +12,18 @@ import { DatabaseService } from './services/database-service.js';
  */
 export async function startPostgresMcpServer(params: { connectionString: string; ssl?: boolean }): Promise<void> {
     // Create server instance
-    const server = new McpServer({
-        name: 'PostgresMcpServer',
-        version: '1.0.0',
-    });
+    const server = new McpServer(
+        {
+            name: 'PostgresMcpServer',
+            version: '1.0.0',
+        },
+        {
+            capabilities: {
+                resources: {},
+                tools: {},
+            },
+        },
+    );
 
     // Initialize database service
     const dbService = new DatabaseService({
@@ -24,6 +33,9 @@ export async function startPostgresMcpServer(params: { connectionString: string;
 
     // Register all tools
     registerTools(server, dbService);
+
+    // Register all resources
+    registerResources(server, dbService);
 
     // Start the server with stdio transport
     const transport = new StdioServerTransport();
@@ -54,10 +66,18 @@ export async function startPostgresMcpServerSSE(
     },
 ): Promise<void> {
     // Create server instance
-    const server = new McpServer({
-        name: 'PostgresMcpServer',
-        version: '1.0.0',
-    });
+    const server = new McpServer(
+        {
+            name: 'PostgresMcpServer',
+            version: '1.0.0',
+        },
+        {
+            capabilities: {
+                resources: {},
+                tools: {},
+            },
+        },
+    );
 
     // Initialize database service
     const dbService = new DatabaseService({
@@ -67,6 +87,9 @@ export async function startPostgresMcpServerSSE(
 
     // Register all tools
     registerTools(server, dbService);
+
+    // Register all resources
+    registerResources(server, dbService);
 
     // Set up Express app for SSE
     const app = express();
