@@ -1,5 +1,11 @@
 # @monsoft/mcp-postgres
 
+## 0.6.0
+
+### Minor Changes
+
+- 433276d: fix issues with the insert tool
+
 ## 0.5.0
 
 ### Minor Changes
