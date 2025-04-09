@@ -172,9 +172,6 @@ export class InsertTool {
         }
 
         try {
-            // Begin transaction
-            await this.dbService.query('BEGIN');
-
             // Ensure all records have the same structure
             const firstRecord = data[0];
             const columns = Object.keys(firstRecord);
@@ -215,9 +212,6 @@ export class InsertTool {
 
             // Execute the batch insert
             const result = await this.dbService.query(query, allValues);
-
-            // Commit transaction
-            await this.dbService.query('COMMIT');
 
             return result;
         } catch (error: any) {
