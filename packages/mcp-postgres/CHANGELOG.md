@@ -1,5 +1,11 @@
 # @monsoft/mcp-postgres
 
+## 0.3.0
+
+### Minor Changes
+
+- 2f9ceb3: Remove console output from env
+
 ## 0.2.0
 
 ### Minor Changes
