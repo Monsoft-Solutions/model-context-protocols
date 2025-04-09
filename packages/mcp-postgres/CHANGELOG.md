@@ -1,5 +1,11 @@
 # @monsoft/mcp-postgres
 
+## 0.4.0
+
+### Minor Changes
+
+- 5a71485: Add the tools to list the tables, and insert data
+
 ## 0.3.0
 
 ### Minor Changes
