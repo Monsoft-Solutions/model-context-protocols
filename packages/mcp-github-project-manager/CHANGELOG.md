@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.7.0
+
+### Minor Changes
+
+- b66fba0: use the v2 of GitHub api to handle the projects
+
 ## 1.6.0
 
 ### Minor Changes
