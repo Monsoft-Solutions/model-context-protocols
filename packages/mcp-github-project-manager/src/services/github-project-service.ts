@@ -9,6 +9,7 @@ import {
     GetProjectColumnsParams,
     ProjectColumn,
     AddProjectItemWithColumnParams,
+    ListProjectsParams,
 } from '../types/index.js';
 import { GitHubError, handleGitHubError } from '../errors/index.js';
 
@@ -85,6 +86,67 @@ export class GitHubProjectService {
             `);
 
             return result.createProjectV2.projectV2;
+        } catch (error) {
+            throw handleGitHubError(error as GitHubError);
+        }
+    }
+
+    /**
+     * List all projects for an organization or user
+     * @param params Parameters to list projects
+     * @returns List of projects
+     */
+    async listProjects(params: ListProjectsParams) {
+        try {
+            const { owner, first = 20 } = params;
+
+            let projects: any[] = [];
+
+            try {
+                // Try as organization first
+                const orgResult = await this.graphqlWithAuth<{ organization: { projectsV2: { nodes: any[] } } }>(`
+                    query {
+                        organization(login: "${owner}") {
+                            projectsV2(first: ${first}) {
+                                nodes {
+                                    id
+                                    title
+                                    url
+                                    number
+                                    readme
+                                    createdAt
+                                    closed
+                                    shortDescription
+                                }
+                            }
+                        }
+                    }
+                `);
+                projects = orgResult.organization.projectsV2.nodes;
+            } catch (error) {
+                // If not an org, try as user
+                const userResult = await this.graphqlWithAuth<{ user: { projectsV2: { nodes: any[] } } }>(`
+                    query {
+                        user(login: "${owner}") {
+                            projectsV2(first: ${first}) {
+                                nodes {
+                                    id
+                                    title
+                                    url
+                                    number
+                                    readme
+                                    createdAt
+                                    closed
+                                    shortDescription
+                                }
+                            }
+                        }
+                    }
+                `);
+                projects = userResult.user.projectsV2.nodes;
+            }
+
+            return projects;
         } catch (error) {
             throw handleGitHubError(error as GitHubError);
         }

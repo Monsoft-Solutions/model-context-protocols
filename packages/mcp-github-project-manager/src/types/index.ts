@@ -249,6 +249,12 @@ export type UpdateProjectItemParams = {
     position?: 'top' | 'bottom' | number;
 };
 
+// List projects parameters
+export type ListProjectsParams = {
+    owner: string; // Organization or user login
+    first?: number; // Number of projects to return
+};
+
 // Project item listing parameters
 export type ListProjectItemsParams = {
     projectId: string; // GraphQL node ID

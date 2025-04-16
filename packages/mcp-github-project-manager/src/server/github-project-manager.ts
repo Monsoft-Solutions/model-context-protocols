@@ -537,6 +537,44 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
             }
         },
     );
+
+    // List Projects Tool
+    server.tool(
+        'list_projects',
+        'List GitHub projects for an organization or user',
+        {
+            owner: z.string().describe('Organization name or username'),
+            first: z.number().optional().describe('Number of projects to return (default: 20)'),
+        },
+        async (args) => {
+            try {
+                const projects = await projectService.listProjects(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                count: projects.length,
+                                projects: projects.map((project) => ({
+                                    id: project.id,
+                                    title: project.title,
+                                    url: project.url,
+                                    number: project.number,
+                                    shortDescription: project.shortDescription,
+                                    createdAt: project.createdAt,
+                                    closed: project.closed,
+                                })),
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
 }
 
 /**
