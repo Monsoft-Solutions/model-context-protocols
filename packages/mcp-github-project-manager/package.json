@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
+    "@octokit/graphql": "^7.0.2",
     "@octokit/rest": "^20.0.2",
     "shx": "^0.4.0",
     "yargs": "^17.7.2",

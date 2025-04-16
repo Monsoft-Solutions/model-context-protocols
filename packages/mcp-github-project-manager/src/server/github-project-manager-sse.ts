@@ -339,13 +339,13 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         'add_project_item',
         'Add an issue or pull request to a GitHub project',
         {
-            project_id: z.number().describe('Project ID'),
-            content_id: z.number().describe('Issue or PR ID'),
+            projectId: z.string().describe('Project ID'),
+            contentId: z.string().describe('Issue or PR ID'),
             content_type: z.enum(['Issue', 'PullRequest']).describe('Type of content to add'),
         },
         async (args, _extra) => {
             try {
-                const card = await projectService.addProjectItem(args);
+                const item = await projectService.addProjectItem(args);
 
                 return {
                     content: [
@@ -354,9 +354,9 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                             text: JSON.stringify({
                                 success: true,
                                 card: {
-                                    id: card.id,
-                                    url: card.url,
-                                    created_at: card.created_at,
+                                    id: item.id,
+                                    url: item.url,
+                                    created_at: item.created_at,
                                 },
                             }),
                         },
@@ -384,9 +384,9 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         async (args, _extra) => {
             try {
                 await projectService.updateProjectItem({
-                    project_id: Number(args.project_id),
-                    item_id: Number(args.item_id),
-                    column_id: Number(args.column_id),
+                    projectId: String(args.project_id),
+                    itemId: String(args.item_id),
+                    columnId: String(args.column_id),
                     position: args.position,
                 });
 
@@ -412,8 +412,8 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         'list_project_items',
         'List items in a GitHub project',
         {
-            project_id: z.number().describe('Project ID'),
-            column_id: z.number().optional().describe('Column ID to filter by'),
+            projectId: z.string().describe('Project ID'),
+            columnId: z.string().optional().describe('Column ID to filter by'),
         },
         async (args, _extra) => {
             try {

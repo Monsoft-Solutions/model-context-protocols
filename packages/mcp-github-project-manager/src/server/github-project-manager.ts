@@ -335,10 +335,73 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                                 success: true,
                                 project: {
                                     id: project.id,
-                                    name: project.name,
-                                    html_url: project.html_url,
-                                    created_at: project.created_at,
+                                    title: project.title,
+                                    url: project.url,
+                                    number: project.number,
+                                    createdAt: project.createdAt,
                                 },
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Get Project Fields Tool
+    server.tool(
+        'get_project_fields',
+        'Get all fields available in a GitHub project',
+        {
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+        },
+        async (args) => {
+            try {
+                const fields = await projectService.getProjectFields(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                fields: fields.map((field) => ({
+                                    id: field.id,
+                                    name: field.name,
+                                    type: field.type,
+                                    options: field.options,
+                                })),
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Get Project Columns Tool
+    server.tool(
+        'get_project_columns',
+        'Get columns (status options) available in a GitHub project',
+        {
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+        },
+        async (args) => {
+            try {
+                const { statusFieldId, columns } = await projectService.getProjectColumns(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                statusFieldId,
+                                columns,
                             }),
                         },
                     ],
@@ -354,13 +417,12 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         'add_project_item',
         'Add an issue or pull request to a GitHub project',
         {
-            project_id: z.number().describe('Project ID'),
-            content_id: z.number().describe('Issue or PR ID'),
-            content_type: z.enum(['Issue', 'PullRequest']).describe('Type of content to add'),
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+            contentId: z.string().describe('Issue or PR ID (GraphQL node ID)'),
         },
         async (args) => {
             try {
-                const card = await projectService.addProjectItem(args);
+                const item = await projectService.addProjectItem(args);
 
                 return {
                     content: [
@@ -368,10 +430,42 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                             type: 'text' as const,
                             text: JSON.stringify({
                                 success: true,
-                                card: {
-                                    id: card.id,
-                                    url: card.url,
-                                    created_at: card.created_at,
+                                item: {
+                                    id: item.id,
+                                },
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Add Project Item with Column Tool
+    server.tool(
+        'add_project_item_with_column',
+        'Add an issue or pull request to a GitHub project and place it in a specific column',
+        {
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+            contentId: z.string().describe('Issue or PR ID (GraphQL node ID)'),
+            fieldId: z.string().describe('Status field ID from get_project_columns'),
+            columnId: z.string().describe('Column (status option) ID from get_project_columns'),
+        },
+        async (args) => {
+            try {
+                const item = await projectService.addProjectItemWithColumn(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                item: {
+                                    id: item.id,
+                                    message: 'Item added and placed in the specified column',
                                 },
                             }),
                         },
@@ -388,22 +482,14 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         'update_project_item',
         'Move an item between columns in a GitHub project',
         {
-            project_id: z.number().describe('Project ID'),
-            item_id: z.number().describe('Card ID to move'),
-            column_id: z.number().describe('Column ID to move the card to'),
-            position: z
-                .union([z.enum(['top', 'bottom']), z.number()])
-                .optional()
-                .describe('Position in the column (top, bottom, or specific position)'),
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+            itemId: z.string().describe('Item ID to move (GraphQL node ID)'),
+            fieldId: z.string().describe('Status field ID from get_project_columns'),
+            columnId: z.string().describe('Column ID to move the item to (from get_project_columns)'),
         },
         async (args) => {
             try {
-                await projectService.updateProjectItem({
-                    project_id: Number(args.project_id),
-                    item_id: Number(args.item_id),
-                    column_id: Number(args.column_id),
-                    position: args.position,
-                });
+                await projectService.updateProjectItem(args);
 
                 return {
                     content: [
@@ -411,7 +497,7 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                             type: 'text' as const,
                             text: JSON.stringify({
                                 success: true,
-                                message: `Card ${args.item_id} moved to column ${args.column_id}`,
+                                message: `Item ${args.itemId} moved to column ${args.columnId}`,
                             }),
                         },
                     ],
@@ -427,22 +513,12 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
         'list_project_items',
         'List items in a GitHub project',
         {
-            project_id: z.number().describe('Project ID'),
-            column_id: z.number().optional().describe('Column ID to filter by'),
+            projectId: z.string().describe('Project ID (GraphQL node ID)'),
+            first: z.number().optional().describe('Number of items to return (default: 20)'),
         },
         async (args) => {
             try {
-                const cards = await projectService.listProjectItems(args);
-
-                // Format the response
-                const formattedCards = cards.map((card) => ({
-                    id: card.id,
-                    url: card.url,
-                    created_at: card.created_at,
-                    updated_at: card.updated_at,
-                    content_url: card.content_url,
-                    note: card.note || undefined,
-                }));
+                const items = await projectService.listProjectItems(args);
 
                 return {
                     content: [
@@ -450,8 +526,8 @@ function registerProjectTools(server: McpServer, projectService: GitHubProjectSe
                             type: 'text' as const,
                             text: JSON.stringify({
                                 success: true,
-                                count: formattedCards.length,
-                                cards: formattedCards,
+                                count: items.length,
+                                items,
                             }),
                         },
                     ],

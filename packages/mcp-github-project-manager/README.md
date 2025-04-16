@@ -2,6 +2,45 @@
 
 A Model Context Protocol (MCP) implementation for managing GitHub projects and issues. This package provides a seamless interface for AI assistants and applications to interact with GitHub repositories, issues, pull requests, and projects.
 
+## Projects v2 API Update
+
+This package has been updated to use GitHub's Projects v2 API instead of the deprecated classic Projects API.
+
+### Key Changes:
+
+- Uses GraphQL API instead of REST API
+- Requires a token with `project` scope
+- Returns different ID formats (GraphQL node IDs)
+- Different parameter names in the API calls
+
+### Getting a Project ID:
+
+To find a Project ID for use with this API, you can use the following GraphQL query:
+
+```graphql
+query {
+    organization(login: "YOUR_ORG_NAME") {
+        projectV2(number: PROJECT_NUMBER) {
+            id
+        }
+    }
+}
+```
+
+Or for user projects:
+
+```graphql
+query {
+    user(login: "YOUR_USERNAME") {
+        projectV2(number: PROJECT_NUMBER) {
+            id
+        }
+    }
+}
+```
+
+Replace `PROJECT_NUMBER` with the number from your project URL (e.g., for `https://github.com/orgs/your-org/projects/5`, use `5`).
+
 ## Features
 
 ### GitHub Issue Management
@@ -260,13 +299,55 @@ const project = await manager.createProject({
 });
 ```
 
+#### Get Project Fields and Columns
+
+```typescript
+// Get all fields in a project including Status, Assignees, etc.
+const fields = await manager.getProjectFields({
+    projectId: 'graphql-project-id',
+});
+
+// Get just the Status field and its column options
+const { statusFieldId, columns } = await manager.getProjectColumns({
+    projectId: 'graphql-project-id',
+});
+
+console.log('Status Field ID:', statusFieldId);
+console.log('Available Columns:', columns);
+// Example output:
+// [
+//   { id: 'f75ad846', name: 'Todo' },
+//   { id: '47fc9ee4', name: 'In Progress' },
+//   { id: '98236657', name: 'Done' }
+// ]
+```
+
 #### Add Item to Project
 
 ```typescript
+// Simple add without specifying column
 await manager.addProjectItem({
-    project_id: 12345,
-    content_id: issue.id,
-    content_type: 'Issue',
+    projectId: 'graphql-project-id',
+    contentId: 'graphql-issue-id',
+});
+
+// Add and place in a specific column in one operation
+await manager.addProjectItemWithColumn({
+    projectId: 'graphql-project-id',
+    contentId: 'graphql-issue-id',
+    fieldId: 'status-field-id', // Get this from getProjectColumns
+    columnId: 'column-id', // Get this from getProjectColumns
+});
+```
+
+#### Move Item Between Columns
+
+```typescript
+await manager.updateProjectItem({
+    projectId: 'graphql-project-id',
+    itemId: 'graphql-item-id',
+    fieldId: 'status-field-id', // Get this from getProjectColumns
+    columnId: 'target-column-id', // Get this from getProjectColumns
 });
 ```
 
@@ -274,7 +355,8 @@ await manager.addProjectItem({
 
 ```typescript
 const items = await manager.listProjectItems({
-    project_id: 12345,
+    projectId: 'graphql-project-id',
+    first: 50, // Optionally limit number of results
 });
 ```
 

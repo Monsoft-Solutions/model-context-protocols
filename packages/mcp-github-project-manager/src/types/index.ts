@@ -224,7 +224,7 @@ export type UpdatePullRequestBranchParams = {
 };
 
 /**
- * GitHub Project types
+ * GitHub Project v2 types
  */
 
 // Project creation parameters
@@ -236,30 +236,75 @@ export type CreateProjectParams = {
 
 // Project item addition parameters
 export type AddProjectItemParams = {
-    project_id: number;
-    content_id: number;
-    content_type: 'Issue' | 'PullRequest';
+    projectId: string; // GraphQL node ID
+    contentId: string; // GraphQL node ID
 };
 
 // Project item update parameters
 export type UpdateProjectItemParams = {
-    project_id: number;
-    item_id: number;
-    column_id?: number;
+    projectId: string; // GraphQL node ID
+    itemId: string; // GraphQL node ID
+    fieldId?: string; // Field ID for updating values
+    columnId?: string; // For moving items between columns
     position?: 'top' | 'bottom' | number;
 };
 
 // Project item listing parameters
 export type ListProjectItemsParams = {
-    project_id: number;
-    column_id?: number;
+    projectId: string; // GraphQL node ID
+    columnId?: string; // Optional column ID
+    first?: number; // Number of items to return
 };
 
-/**
- * Error types
- */
+// GraphQL response type
+export type GraphQLResponse<T> = {
+    data?: T;
+    errors?: Array<{
+        message: string;
+        locations?: Array<{
+            line: number;
+            column: number;
+        }>;
+        path?: string[];
+        extensions?: Record<string, any>;
+    }>;
+};
+
+// GitHub API error type
 export type GitHubApiError = {
     status: number;
     message: string;
     documentation_url?: string;
+};
+
+// Get project fields parameters
+export type GetProjectFieldsParams = {
+    projectId: string; // GraphQL node ID
+};
+
+// Project field type
+export type ProjectField = {
+    id: string;
+    name: string;
+    type: string;
+    options?: Array<{ id: string; name: string }>;
+};
+
+// Get project columns parameters
+export type GetProjectColumnsParams = {
+    projectId: string; // GraphQL node ID
+};
+
+// Project column type
+export type ProjectColumn = {
+    id: string; // The option ID
+    name: string;
+};
+
+// Add project item with column parameters
+export type AddProjectItemWithColumnParams = {
+    projectId: string; // GraphQL node ID
+    contentId: string; // GraphQL node ID
+    fieldId: string; // Status field ID
+    columnId: string; // Column (status option) ID
 };
