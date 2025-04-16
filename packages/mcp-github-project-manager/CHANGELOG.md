@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.6.0
+
+### Minor Changes
+
+- 1ed632c: Introduce tools to handle milestones
+
 ## 1.5.0
 
 ### Minor Changes
