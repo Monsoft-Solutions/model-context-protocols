@@ -1,5 +1,11 @@
 # @monsoft/mcp-github-project-manager
 
+## 1.8.0
+
+### Minor Changes
+
+- 8b013d2: ADd tool to list the projects
+
 ## 1.7.0
 
 ### Minor Changes
