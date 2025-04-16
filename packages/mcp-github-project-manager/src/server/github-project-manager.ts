@@ -1,7 +1,12 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { GitHubIssueService, GitHubProjectService, GitHubPullRequestService } from '../services/index.js';
+import {
+    GitHubIssueService,
+    GitHubProjectService,
+    GitHubPullRequestService,
+    GitHubMilestoneService,
+} from '../services/index.js';
 import { AuthenticationError, ResourceNotFoundError, ValidationError } from '../errors/index.js';
 
 // Environment variable for GitHub token
@@ -17,6 +22,7 @@ export async function startGitHubProjectManagerServer(token: string) {
     const issueService = new GitHubIssueService(githubToken);
     const projectService = new GitHubProjectService(githubToken);
     const pullRequestService = new GitHubPullRequestService(githubToken);
+    const milestoneService = new GitHubMilestoneService(githubToken);
 
     // Create a new MCP server
     const server = new McpServer({
@@ -32,6 +38,9 @@ export async function startGitHubProjectManagerServer(token: string) {
 
     // Register GitHub Pull Request Management tools
     registerPullRequestTools(server, pullRequestService);
+
+    // Register GitHub Milestone Management tools
+    registerMilestoneTools(server, milestoneService);
 
     // Set up server transport using Standard I/O
     const transport = new StdioServerTransport();
@@ -970,6 +979,217 @@ function registerPullRequestTools(server: McpServer, pullRequestService: GitHubP
                                 success: true,
                                 message: result.message,
                                 url: result.url,
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+}
+
+/**
+ * Register GitHub Milestone Management tools
+ */
+function registerMilestoneTools(server: McpServer, milestoneService: GitHubMilestoneService) {
+    // Create Milestone Tool
+    server.tool(
+        'create_milestone',
+        'Create a new milestone in a GitHub repository',
+        {
+            owner: z.string().describe('Repository owner (username or organization)'),
+            repo: z.string().describe('Repository name'),
+            title: z.string().describe('Milestone title'),
+            description: z.string().optional().describe('Milestone description'),
+            due_on: z.string().optional().describe('Due date for the milestone (ISO 8601 format)'),
+            state: z.enum(['open', 'closed']).optional().describe('Milestone state'),
+        },
+        async (args) => {
+            try {
+                const milestone = await milestoneService.createMilestone(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                milestone: {
+                                    number: milestone.number,
+                                    title: milestone.title,
+                                    description: milestone.description,
+                                    state: milestone.state,
+                                    due_on: milestone.due_on,
+                                    created_at: milestone.created_at,
+                                    html_url: milestone.html_url,
+                                },
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Update Milestone Tool
+    server.tool(
+        'update_milestone',
+        'Update an existing milestone in a GitHub repository',
+        {
+            owner: z.string().describe('Repository owner (username or organization)'),
+            repo: z.string().describe('Repository name'),
+            milestone_number: z.number().describe('Milestone number'),
+            title: z.string().optional().describe('New milestone title'),
+            description: z.string().optional().describe('New milestone description'),
+            due_on: z.string().optional().describe('New due date for the milestone (ISO 8601 format)'),
+            state: z.enum(['open', 'closed']).optional().describe('New milestone state'),
+        },
+        async (args) => {
+            try {
+                const milestone = await milestoneService.updateMilestone(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                milestone: {
+                                    number: milestone.number,
+                                    title: milestone.title,
+                                    description: milestone.description,
+                                    state: milestone.state,
+                                    due_on: milestone.due_on,
+                                    updated_at: milestone.updated_at,
+                                    html_url: milestone.html_url,
+                                },
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Get Milestone Tool
+    server.tool(
+        'get_milestone',
+        'Get details of a specific milestone in a GitHub repository',
+        {
+            owner: z.string().describe('Repository owner (username or organization)'),
+            repo: z.string().describe('Repository name'),
+            milestone_number: z.number().describe('Milestone number'),
+        },
+        async (args) => {
+            try {
+                const milestone = await milestoneService.getMilestone(args);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                milestone: {
+                                    number: milestone.number,
+                                    title: milestone.title,
+                                    description: milestone.description,
+                                    state: milestone.state,
+                                    open_issues: milestone.open_issues,
+                                    closed_issues: milestone.closed_issues,
+                                    due_on: milestone.due_on,
+                                    created_at: milestone.created_at,
+                                    updated_at: milestone.updated_at,
+                                    closed_at: milestone.closed_at,
+                                    html_url: milestone.html_url,
+                                },
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // List Milestones Tool
+    server.tool(
+        'list_milestones',
+        'List milestones in a GitHub repository with filtering options',
+        {
+            owner: z.string().describe('Repository owner (username or organization)'),
+            repo: z.string().describe('Repository name'),
+            state: z.enum(['open', 'closed', 'all']).optional().describe('Milestone state'),
+            sort: z.enum(['due_on', 'completeness']).optional().describe('Sort field'),
+            direction: z.enum(['asc', 'desc']).optional().describe('Sort direction'),
+            per_page: z.number().optional().describe('Results per page'),
+            page: z.number().optional().describe('Page number'),
+        },
+        async (args) => {
+            try {
+                const milestones = await milestoneService.listMilestones(args);
+
+                // Format the response to include only necessary information
+                const formattedMilestones = milestones.map((milestone) => ({
+                    number: milestone.number,
+                    title: milestone.title,
+                    description: milestone.description,
+                    state: milestone.state,
+                    open_issues: milestone.open_issues,
+                    closed_issues: milestone.closed_issues,
+                    due_on: milestone.due_on,
+                    created_at: milestone.created_at,
+                    updated_at: milestone.updated_at,
+                    closed_at: milestone.closed_at,
+                    html_url: milestone.html_url,
+                }));
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                count: formattedMilestones.length,
+                                milestones: formattedMilestones,
+                            }),
+                        },
+                    ],
+                };
+            } catch (error) {
+                return handleToolError(error);
+            }
+        },
+    );
+
+    // Delete Milestone Tool
+    server.tool(
+        'delete_milestone',
+        'Delete a milestone from a GitHub repository',
+        {
+            owner: z.string().describe('Repository owner (username or organization)'),
+            repo: z.string().describe('Repository name'),
+            milestone_number: z.number().describe('Milestone number'),
+        },
+        async (args) => {
+            try {
+                const { owner, repo, milestone_number } = args;
+                await milestoneService.deleteMilestone(owner, repo, milestone_number);
+
+                return {
+                    content: [
+                        {
+                            type: 'text' as const,
+                            text: JSON.stringify({
+                                success: true,
+                                message: `Milestone ${milestone_number} was successfully deleted`,
                             }),
                         },
                     ],

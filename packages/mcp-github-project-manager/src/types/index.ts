@@ -59,6 +59,49 @@ export type GetIssueParams = {
 };
 
 /**
+ * GitHub Milestone types
+ */
+
+// Milestone creation parameters
+export type CreateMilestoneParams = {
+    owner: string;
+    repo: string;
+    title: string;
+    description?: string;
+    due_on?: string;
+    state?: 'open' | 'closed';
+};
+
+// Milestone update parameters
+export type UpdateMilestoneParams = {
+    owner: string;
+    repo: string;
+    milestone_number: number;
+    title?: string;
+    description?: string;
+    due_on?: string;
+    state?: 'open' | 'closed';
+};
+
+// Milestone listing parameters
+export type ListMilestonesParams = {
+    owner: string;
+    repo: string;
+    state?: 'open' | 'closed' | 'all';
+    sort?: 'due_on' | 'completeness';
+    direction?: 'asc' | 'desc';
+    per_page?: number;
+    page?: number;
+};
+
+// Milestone get parameters
+export type GetMilestoneParams = {
+    owner: string;
+    repo: string;
+    milestone_number: number;
+};
+
+/**
  * GitHub Pull Request types
  */
 
