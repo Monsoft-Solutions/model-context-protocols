@@ -38,9 +38,7 @@ export async function startSseServer(params: { token: string; port: number }): P
         res.status(400).json({ error: 'No active SSE transport' });
     });
 
-    app.listen(params.port, () => {
-        console.log(`SSE server listening on port ${params.port}`);
-    });
+    app.listen(params.port, () => {});
 }
 
 export async function startServer(): Promise<void> {

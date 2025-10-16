@@ -6,6 +6,5 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-    console.error('Error starting MCP server:', error);
     process.exit(1);
 });

@@ -28,6 +28,49 @@ FAL_API_KEY=YOUR_KEY RUN_SSE=true PORT=3001 npx mcp-fal-ai
 - `--run-sse` | `-s`
 - `--port` | `-p`
 
+## Example Clients
+
+### List Models Example
+
+```bash
+cd packages/mcp-fal-ai
+npm run example:build
+FAL_API_KEY=YOUR_KEY npm run example:list-models
+```
+
+This example demonstrates how to:
+
+- List available models with pagination
+- Search for models by keyword (image generation, text processing)
+- Get model schemas for specific models
+- Display model information in a user-friendly format
+
+### Generate Image Example
+
+```bash
+cd packages/mcp-fal-ai
+npm run example:build
+FAL_API_KEY=YOUR_KEY npm run example:generate-nano-banana
+```
+
+This example shows how to:
+
+- Enqueue an image generation job
+- Poll for job status with progress updates
+- Retrieve the final result
+
+### Download Image Example
+
+```bash
+cd packages/mcp-fal-ai
+npm run example:build
+FAL_API_KEY=YOUR_KEY IMAGE_URL=https://example.com/image.jpg npm run example:download-image
+```
+
+This example demonstrates:
+
+- Downloading images from URLs using fal.ai's download service
+
 ## Status: Phase 0 Complete ✅
 
 **Phase 0 — Discovery and API Confirmation** has been completed. All fal.ai endpoints have been documented, request/response schemas captured, and implementation roadmap established.
@@ -79,7 +122,7 @@ packages/mcp-fal-ai/
 │   ├── config/
 │   │   └── env.ts               # Environment configuration
 │   ├── services/
-│   │   └── fal-client.ts        # fal.ai API client wrapper
+│   │   └── fal-client.ts        # fal.ai HTTP client wrapper (no SDK)
 │   ├── tools/                   # MCP tools
 │   ├── resources/               # MCP resources
 │   ├── prompts/                 # MCP prompts
@@ -161,9 +204,9 @@ packages/mcp-fal-ai/
 - `fal-get-model-schema` { modelId }
 - `fal-run-sync` { modelId, input }
 - `fal-enqueue` { modelId, input }
-- `fal-get-status` { requestId }
-- `fal-get-result` { requestId }
-- `fal-cancel` { requestId }
+- `fal-get-status` { requestId, modelId? }
+- `fal-get-result` { requestId, modelId? }
+- `fal-cancel` { requestId, modelId? }
 - `fal-enqueue-and-wait` { modelId, input, timeoutMs?, initialBackoffMs? }
 
 ### Resources

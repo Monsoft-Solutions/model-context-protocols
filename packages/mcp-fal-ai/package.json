@@ -17,10 +17,16 @@
     "build": "tsc && shx chmod +x dist/*.js",
     "prepare": "npm run build",
     "watch": "tsc --watch",
-    "validate": "tsc --noEmit"
+    "validate": "tsc --noEmit",
+    "example:build": "npm run build",
+    "example:run": "node dist/examples/fal-example.js",
+    "example:list-models": "node dist/examples/list-models.js",
+    "example:generate-nano-banana": "node dist/examples/generate-nano-banana.js",
+    "example:download-image": "node dist/examples/download-image.js",
+    "example:get-model-schema": "node dist/examples/get-model-schema.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.20.0",
     "@types/node": "^22",
     "express": "^5.0.1",
     "undici": "^6.19.8",
@@ -30,8 +36,8 @@
   },
   "devDependencies": {
     "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.6.2"
   }
 }
-
-
