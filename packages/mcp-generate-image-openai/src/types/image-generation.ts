@@ -30,6 +30,18 @@ export const ImageSizeSchema = z.enum(['1024x1024', '1536x1024', '1024x1536', 'a
 export const ImageQualitySchema = z.enum(['low', 'medium', 'high']);
 
 /**
+ * Schema for ImageKit upload options
+ */
+export const ImageKitUploadSchema = z.object({
+    enabled: z.boolean().default(false).describe('Whether to upload the generated image to ImageKit'),
+    folder: z.string().optional().describe('Folder path in ImageKit to store the image'),
+    fileName: z
+        .string()
+        .optional()
+        .describe('Custom file name for the uploaded image (a unique name will be generated if not provided)'),
+});
+
+/**
  * Type for image generation parameters
  */
 export const ImageGenerationParamsSchema = z.object({
@@ -64,11 +76,13 @@ export const ImageGenerationParamsSchema = z.object({
         .describe(
             'The compression level (0-100%) for the generated images. This parameter is only supported for gpt-image-1 with the webp or jpeg output formats, and defaults to 100.',
         ),
+    imagekit: ImageKitUploadSchema.optional().describe('Options for uploading images to ImageKit'),
 });
 
 export type ImageModel = z.infer<typeof ImageModelSchema>;
 export type ImageSize = z.infer<typeof ImageSizeSchema>;
 export type ImageQuality = z.infer<typeof ImageQualitySchema>;
+export type ImageKitUpload = z.infer<typeof ImageKitUploadSchema>;
 export type ImageGenerationParams = z.infer<typeof ImageGenerationParamsSchema>;
 
 /**
@@ -78,6 +92,7 @@ export interface GeneratedImage {
     url?: string;
     b64_json?: string;
     revised_prompt?: string;
+    imagekit_url?: string; // URL of the image uploaded to ImageKit
 }
 
 /**

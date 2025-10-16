@@ -11,19 +11,29 @@ import { loadEnv, type Env } from './config/env.js';
 
 /**
  * Initialize and start the MCP server with stdio transport
- * @param apiKey OpenAI API key
+ * @param env Environment configuration
  * @returns Promise<void>
  */
-export async function startMcpServer(apiKey: string): Promise<void> {
+export async function startMcpServer(env: Env): Promise<void> {
     // Create server instance
     const server = new McpServer({
         name: 'OpenAI Image Generator',
         version: '1.0.0',
     });
 
+    // Create ImageKit config if all values are provided
+    const imageKitConfig =
+        env.IMAGEKIT_PUBLIC_KEY && env.IMAGEKIT_PRIVATE_KEY && env.IMAGEKIT_URL_ENDPOINT
+            ? {
+                  publicKey: env.IMAGEKIT_PUBLIC_KEY,
+                  privateKey: env.IMAGEKIT_PRIVATE_KEY,
+                  urlEndpoint: env.IMAGEKIT_URL_ENDPOINT,
+              }
+            : undefined;
+
     // Register all components
     registerResources(server);
-    registerTools(server, apiKey);
+    registerTools(server, env.OPENAI_API_KEY, imageKitConfig);
     registerPrompts(server);
 
     // Start the server with stdio transport
@@ -33,20 +43,29 @@ export async function startMcpServer(apiKey: string): Promise<void> {
 
 /**
  * Initialize and start the MCP server with SSE transport
- * @param apiKey OpenAI API key
- * @param port HTTP server port
+ * @param env Environment configuration
  * @returns Promise<void>
  */
-export async function startMcpServerSSE(apiKey: string, port: number): Promise<void> {
+export async function startMcpServerSSE(env: Env): Promise<void> {
     // Create server instance
     const server = new McpServer({
         name: 'OpenAI Image Generator',
         version: '1.0.0',
     });
 
+    // Create ImageKit config if all values are provided
+    const imageKitConfig =
+        env.IMAGEKIT_PUBLIC_KEY && env.IMAGEKIT_PRIVATE_KEY && env.IMAGEKIT_URL_ENDPOINT
+            ? {
+                  publicKey: env.IMAGEKIT_PUBLIC_KEY,
+                  privateKey: env.IMAGEKIT_PRIVATE_KEY,
+                  urlEndpoint: env.IMAGEKIT_URL_ENDPOINT,
+              }
+            : undefined;
+
     // Register all components
     registerResources(server);
-    registerTools(server, apiKey);
+    registerTools(server, env.OPENAI_API_KEY, imageKitConfig);
     registerPrompts(server);
 
     // Set up Express app for SSE
@@ -82,8 +101,8 @@ export async function startMcpServerSSE(apiKey: string, port: number): Promise<v
     });
 
     // Start the HTTP server
-    app.listen(port, () => {
-        console.log(`SSE server listening on port ${port}`);
+    app.listen(env.PORT, () => {
+        console.log(`SSE server listening on port ${env.PORT}`);
     });
 }
 
@@ -98,9 +117,9 @@ export async function startServer(): Promise<void> {
 
         // Start server with appropriate transport based on configuration
         if (env.RUN_SSE) {
-            await startMcpServerSSE(env.OPENAI_API_KEY, env.PORT);
+            await startMcpServerSSE(env);
         } else {
-            await startMcpServer(env.OPENAI_API_KEY);
+            await startMcpServer(env);
         }
     } catch (error) {
         if (error instanceof Error) {

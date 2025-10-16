@@ -1,15 +1,28 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { OpenAIClient } from '../services/openai-client.js';
+import { ImageKitClient } from '../services/imagekit-client.js';
 import { z } from 'zod';
-import { ImageModelSchema, ImageQualitySchema, ImageSizeSchema } from '../types/image-generation.js';
+import {
+    ImageModelSchema,
+    ImageQualitySchema,
+    ImageSizeSchema,
+    ImageKitUploadSchema,
+} from '../types/image-generation.js';
 
 /**
  * Registers the image generation tool with the MCP server
  * @param server - The MCP server instance
  * @param apiKey - OpenAI API key
+ * @param imageKitConfig - ImageKit configuration (optional)
  */
-export function registerImageGenerationTool(server: McpServer, apiKey: string): void {
+export function registerImageGenerationTool(
+    server: McpServer,
+    apiKey: string,
+    imageKitConfig?: { publicKey: string; privateKey: string; urlEndpoint: string },
+): void {
     const openAIClient = new OpenAIClient(apiKey);
+
+    // Initialize ImageKit client if configuration is provided
 
     // Register the image generation tool with Zod schema
     server.tool(
@@ -35,8 +48,8 @@ export function registerImageGenerationTool(server: McpServer, apiKey: string): 
             output_format: z
                 .enum(['png', 'webp', 'jpeg'])
                 .optional()
-                .default('png')
-                .describe('The format of the generated images. Defaults to png.'),
+                .default('webp')
+                .describe('The format of the generated images. Defaults to webp.'),
             output_compression: z
                 .number()
                 .int()
@@ -47,6 +60,11 @@ export function registerImageGenerationTool(server: McpServer, apiKey: string): 
                 .describe(
                     'The compression level (0-100%) for the generated images. This parameter is only supported for gpt-image-1 with the webp or jpeg output formats, and defaults to 100.',
                 ),
+            image_content_format: z
+                .enum(['url', 'base64'])
+                .optional()
+                .default('url')
+                .describe('The format of the generated images. Defaults to url.'),
         },
         async (params) => {
             try {
@@ -68,6 +86,50 @@ export function registerImageGenerationTool(server: McpServer, apiKey: string): 
                 for (let i = 0; i < result.images.length; i++) {
                     const image = result.images[i];
 
+                    // Handle ImageKit upload if requested and b64_json is available
+                    if (params.image_content_format === 'url' && image.b64_json) {
+                        try {
+                            if (
+                                !imageKitConfig ||
+                                !imageKitConfig.publicKey ||
+                                !imageKitConfig.privateKey ||
+                                !imageKitConfig.urlEndpoint
+                            ) {
+                                throw new Error(
+                                    'ImageKit upload requested but ImageKit is not configured on the server. Set up the environment variables to enable ImageKit upload.',
+                                );
+                            }
+
+                            const imageKitClient = new ImageKitClient(
+                                imageKitConfig.publicKey,
+                                imageKitConfig.privateKey,
+                                imageKitConfig.urlEndpoint,
+                            );
+                            // Generate a filename if not provided
+                            const fileName = `generated-image-${Date.now()}-${i}.${params.output_format}`;
+
+                            // Upload to ImageKit
+                            const uploadResult = await imageKitClient?.uploadImage(image.b64_json, fileName);
+
+                            if (uploadResult?.url) {
+                                // Store the ImageKit URL in the image result
+                                image.imagekit_url = uploadResult.url;
+
+                                // Add the ImageKit URL to content
+                                contentItems.push({
+                                    type: 'text' as const,
+                                    text: `Generated Image ${i + 1} (Public URL): ${uploadResult.url}${image.revised_prompt ? ' (Revised Prompt)' : ''}`,
+                                });
+                            }
+                        } catch (uploadError) {
+                            contentItems.push({
+                                type: 'text' as const,
+                                text: `Error uploading to ImageKit: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`,
+                            });
+                        }
+                    }
+
+                    // Add the original image URL or base64 data
                     if (image.url) {
                         // For URL responses, return as text with the URL
                         contentItems.push({
@@ -79,7 +141,7 @@ export function registerImageGenerationTool(server: McpServer, apiKey: string): 
                         contentItems.push({
                             type: 'image' as const,
                             data: image.b64_json,
-                            mimeType: 'image/png',
+                            mimeType: `image/${params.output_format}`,
                         });
                     }
                 }

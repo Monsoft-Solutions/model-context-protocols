@@ -9,6 +9,10 @@ export const envSchema = z.object({
     // Server configuration options
     RUN_SSE: z.boolean().optional().default(false),
     PORT: z.number().int().positive().optional().default(3000),
+    // ImageKit configuration
+    IMAGEKIT_PUBLIC_KEY: z.string().optional(),
+    IMAGEKIT_PRIVATE_KEY: z.string().optional(),
+    IMAGEKIT_URL_ENDPOINT: z.string().optional(),
 });
 
 // Export the type derived from the schema
@@ -40,6 +44,18 @@ export function loadEnv(): Env {
             description: 'Port for HTTP server (when using SSE)',
             type: 'number',
         })
+        .option('imagekit-public-key', {
+            description: 'ImageKit Public Key for image uploads',
+            type: 'string',
+        })
+        .option('imagekit-private-key', {
+            description: 'ImageKit Private Key for image uploads',
+            type: 'string',
+        })
+        .option('imagekit-url-endpoint', {
+            description: 'ImageKit URL Endpoint for image uploads',
+            type: 'string',
+        })
         .help().argv;
 
     // Combine command line args with environment variables
@@ -48,6 +64,10 @@ export function loadEnv(): Env {
         OPENAI_API_KEY: (argv as any)['api-key'] || process.env.OPENAI_API_KEY,
         RUN_SSE: (argv as any)['run-sse'] !== undefined ? (argv as any)['run-sse'] : process.env.RUN_SSE === 'true',
         PORT: (argv as any).port || (process.env.PORT ? parseInt(process.env.PORT, 10) : undefined),
+        // ImageKit configuration
+        IMAGEKIT_PUBLIC_KEY: (argv as any)['imagekit-public-key'] || process.env.IMAGEKIT_PUBLIC_KEY,
+        IMAGEKIT_PRIVATE_KEY: (argv as any)['imagekit-private-key'] || process.env.IMAGEKIT_PRIVATE_KEY,
+        IMAGEKIT_URL_ENDPOINT: (argv as any)['imagekit-url-endpoint'] || process.env.IMAGEKIT_URL_ENDPOINT,
     };
 
     try {
