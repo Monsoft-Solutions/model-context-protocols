@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0
+
+### Minor Changes
+
+- f8a093c: Funtional MCP to work with Vercel Blob
+
 All notable changes to this project will be documented in this file.
 
 ## [1.0.1] - 2025-10-17
