@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+        "vercel-blob": {
+            "command": "npx",
+            "args": ["-y", "@monsoft/mcp-vercel-blob", "--token", "YOUR_VERCEL_BLOB_READ_WRITE_TOKEN"],
+            "env": {}
+        }
+    }
+}

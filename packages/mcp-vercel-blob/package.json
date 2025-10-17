@@ -1,0 +1,36 @@
+{
+  "name": "@monsoft/mcp-vercel-blob",
+  "version": "0.0.1",
+  "description": "MCP server for interacting with Vercel Blob storage",
+  "license": "MIT",
+  "author": "Monsoft Solutions (https://monsoftsolutions.com)",
+  "homepage": "https://github.com/Monsoft-Solutions/model-context-protocols",
+  "bugs": "https://github.com/Monsoft-Solutions/model-context-protocols/issues",
+  "type": "module",
+  "bin": {
+    "mcp-vercel-blob": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "validate": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "@types/node": "^22",
+    "@vercel/blob": "^0.27.0",
+    "express": "^5.0.1",
+    "yargs": "^17.7.2",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.23.5"
+  },
+  "devDependencies": {
+    "shx": "^0.3.4",
+    "typescript": "^5.6.2"
+  }
+}
+
