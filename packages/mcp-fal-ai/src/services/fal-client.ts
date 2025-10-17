@@ -55,7 +55,7 @@ export class FalClient {
         const endpointId = this._normalizeModelId(modelId);
         const url = `${this.SYNC_BASE}/${endpointId}`;
         const output = await this._postJson(url, body);
-        return await this._processOutputWithImages(output);
+        return output;
     }
 
     async enqueue(modelId: string, body: unknown): Promise<unknown> {
@@ -74,7 +74,7 @@ export class FalClient {
         const baseModel = this._baseModelId(this._normalizeModelId(modelId));
         const url = `${this.QUEUE_BASE}/${baseModel}/requests/${encodeURIComponent(requestId)}`;
         const output = await this._getJson(url);
-        return await this._processOutputWithImages(output);
+        return output;
     }
 
     async cancel(requestId: string, modelId: string): Promise<unknown> {
@@ -115,6 +115,7 @@ export class FalClient {
 
     private async _throwForStatus(status: number, endpoint: string, rawText: string): Promise<never> {
         let details: unknown = undefined;
+
         try {
             details = rawText ? JSON.parse(rawText) : undefined;
         } catch {
@@ -129,13 +130,25 @@ export class FalClient {
     }
 
     private async _postJson(url: string, body: unknown): Promise<unknown> {
+        let bodyToSend = body ?? {};
+
+        // If body is a string, parse it first
+        if (typeof body === 'string') {
+            try {
+                bodyToSend = JSON.parse(body);
+            } catch {
+                // If parsing fails, keep the string as is
+                throw new Error('Invalid JSON body');
+            }
+        }
+
         const res = await request(url, {
             method: 'POST',
             headers: {
                 Authorization: `Key ${this._apiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body ?? {}),
+            body: JSON.stringify(bodyToSend),
         });
         if (res.statusCode && res.statusCode >= 400) {
             await this._throwForStatus(res.statusCode, url, await res.body.text());
